@@ -1,0 +1,7 @@
+{
+  "name": "ineffectua",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
