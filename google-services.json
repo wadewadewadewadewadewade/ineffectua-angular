@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "616783557128",
+    "firebase_url": "https://ineffectua.firebaseio.com",
+    "project_id": "ineffectua",
+    "storage_bucket": "ineffectua.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:616783557128:android:c473fc0abeb11b16",
+        "android_client_info": {
+          "package_name": "com.ineffectua.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAc7X0OaRKdN50CMAVQDu-EPrUBXhP58n4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "616783557128-n9hbmlj9g8aekjoqcfl2pj3ehr311np9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
