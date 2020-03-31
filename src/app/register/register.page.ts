@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { AuthenticateService, Credentials } from '../services/authentication.service';
-import { NavController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -26,7 +26,7 @@ export class RegisterPage implements OnInit {
  };
 
   constructor(
-    private navCtrl: NavController,
+    private router: Router,
     private authService: AuthenticateService,
     private formBuilder: FormBuilder
   ) {}
@@ -49,7 +49,8 @@ export class RegisterPage implements OnInit {
      .then(res => {
        console.log(res);
        this.errorMessage = '';
-       this.successMessage = 'Your account has been created. Please log in.';
+       this.successMessage = 'Your account has been created.';
+       this.router.navigate(['/tabs/tab1'], { replaceUrl: true });
      }, err => {
        console.log(err);
        this.errorMessage = err.message;
@@ -58,7 +59,7 @@ export class RegisterPage implements OnInit {
   }
 
   goLoginPage() {
-    this.navCtrl.navigateBack('');
+    this.router.navigate(['/'], { replaceUrl: true });
   }
 
 

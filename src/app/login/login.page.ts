@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { NavController } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { AuthenticateService, Credentials } from '../services/authentication.service';
 
 @Component({
@@ -25,7 +25,7 @@ export class LoginPage implements OnInit {
 
   constructor(
 
-    private navCtrl: NavController,
+    private router: Router,
     private authService: AuthenticateService,
     private formBuilder: FormBuilder
 
@@ -50,14 +50,14 @@ export class LoginPage implements OnInit {
     .then(res => {
       console.log(res);
       this.errorMessage = '';
-      this.navCtrl.navigateForward('/dashboard');
+      this.router.navigate(['/tabs/tab1'], { replaceUrl: true });
     }, err => {
       this.errorMessage = err.message;
     });
   }
 
   goToRegisterPage() {
-    this.navCtrl.navigateForward('/register');
+    this.router.navigate(['/register'], { replaceUrl: true });
   }
 
 }

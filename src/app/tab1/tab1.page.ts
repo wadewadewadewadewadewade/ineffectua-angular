@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { StorageMap } from '@ngx-pwa/local-storage';
-import { HttpClient } from '@angular/common/http';
+// import { StorageMap } from '@ngx-pwa/local-storage';
+// import { HttpClient } from '@angular/common/http';
 
 // Calendar API credentials
 import { GoogleApiService } from 'ng-gapi';
