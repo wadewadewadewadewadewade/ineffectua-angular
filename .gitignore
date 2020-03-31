@@ -18,7 +18,7 @@ log.txt
 npm-debug.log*
 notes.txt
 keystore-*
-credentials.json
+src/app/tab1/credentials.json
 
 /.idea
 /.ionic
