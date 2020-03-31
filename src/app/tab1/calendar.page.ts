@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-// import { StorageMap } from '@ngx-pwa/local-storage';
-// import { HttpClient } from '@angular/common/http';
+import { StorageMap } from '@ngx-pwa/local-storage';
+import { HttpClient } from '@angular/common/http';
 
 // Calendar API credentials
-import { GoogleApiService } from 'ng-gapi';
+import { google } from 'googleapis';
+import * as credentials from './credentials.json';
 
 export interface CalendarCredentials {
   installed: {
@@ -162,41 +163,63 @@ export interface CalendarEvent {
 }
 
 @Component({
-  selector: 'app-tab1',
-  templateUrl: 'tab1.page.html',
-  styleUrls: ['tab1.page.scss']
+  selector: 'app-calendar',
+  templateUrl: 'calendar.page.html',
+  styleUrls: ['calendar.page.scss']
 })
-export class Tab1Page {
+export class CalendarPage {
 
   dates: Array<CalendarEvent>;
+  private TOKEN_NAME = 'calendar_token';
+  private SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 
-  constructor(private gapiService: GoogleApiService) {}
+
+  constructor(private storage: StorageMap, private http: HttpClient) {
+    const {client_secret, client_id, redirect_uris} = credentials.web;
+    const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+    storage.get(this.TOKEN_NAME).toPromise().then((token: any) => {
+      oAuth2Client.setCredentials(token);
+      this.listEvents(oAuth2Client);
+    }).catch((err: any) => {
+      const authUrl = oAuth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: this.SCOPES,
+      });
+      this.http.get(authUrl).subscribe((code: string) => {
+        oAuth2Client.getToken(code, (err, token) => {
+          if (!err) {
+            oAuth2Client.setCredentials(token);
+            this.storage.set(this.TOKEN_NAME, token);
+            this.listEvents(oAuth2Client);
+          }
+        })
+      })
+    })
+  }
 
   listEvents(auth: any): void {
-    this.gapiService.onLoad().subscribe((gapi: any) => {
-      gapi.client.load('calendar', 'v3');
-      gapi.client.calendar.events.list({
-        calendarId: 'primary',
-        timeMin: (new Date()).toISOString(),
-        maxResults: 10,
-        singleEvents: true,
-        orderBy: 'startTime',
-      }, (err, res) => {
-        if (err) {
-          console.log(err);
-        } else {
-          this.dates = new Array<CalendarEvent>();
-          res.data.items.map((e, i, a) => {
-            const newEvent: CalendarEvent = null;
-            for (const key in e) {
-              if (e.hasOwnProperty(key)) {
-                newEvent[key] = e[key];
-              }
+    const calendar = google.calendar({version: 'v3', auth});
+    calendar.events.list({
+      calendarId: 'primary',
+      timeMin: (new Date()).toISOString(),
+      maxResults: 10,
+      singleEvents: true,
+      orderBy: 'startTime',
+    }, (err:any, res:any) => {
+      if (err) {
+        console.log(err);
+      } else {
+        this.dates = new Array<CalendarEvent>();
+        res.data.items.map((e: any, i: number, a: Array<any>) => {
+          const newEvent: CalendarEvent = null;
+          for (const key in e) {
+            if (e.hasOwnProperty(key)) {
+              newEvent[key] = e[key];
             }
-            this.dates.push(newEvent);
-          });
-        }
-      });
+          }
+          this.dates.push(newEvent);
+        });
+      }
     });
   }
 

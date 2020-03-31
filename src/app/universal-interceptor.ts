@@ -1,5 +1,5 @@
 import { Injectable, Inject, Optional } from '@angular/core';
-import { HttpInterceptor, HttpHandler, HttpRequest, HttpHeaders } from '@angular/common/http';
+import { HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
 import { Request } from 'express';
 import { REQUEST } from '@nguniversal/express-engine/tokens';
 
@@ -17,6 +17,7 @@ export class UniversalInterceptor implements HttpInterceptor {
       }
       newUrl += req.url;
       serverReq = req.clone({url: newUrl});
+      console.log(newUrl);
     }
     return next.handle(serverReq);
   }

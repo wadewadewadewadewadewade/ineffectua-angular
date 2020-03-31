@@ -18,6 +18,7 @@ log.txt
 npm-debug.log*
 notes.txt
 keystore-*
+credentials.json
 
 /.idea
 /.ionic
@@ -31,3 +32,5 @@ keystore-*
 /platforms
 /plugins
 /www
+/android
+/ios

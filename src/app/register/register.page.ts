@@ -47,10 +47,10 @@ export class RegisterPage implements OnInit {
   tryRegister(value: Credentials) {
     this.authService.registerUser(value)
      .then(res => {
-       console.log(res);
+       //console.log(res);
        this.errorMessage = '';
        this.successMessage = 'Your account has been created.';
-       this.router.navigate(['/tabs/tab1'], { replaceUrl: true });
+       this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true });
      }, err => {
        console.log(err);
        this.errorMessage = err.message;

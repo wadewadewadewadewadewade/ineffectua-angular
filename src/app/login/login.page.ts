@@ -32,7 +32,6 @@ export class LoginPage implements OnInit {
   ) { }
 
   ngOnInit() {
-
     this.validationsForm = this.formBuilder.group({
       email: new FormControl('', Validators.compose([
         Validators.required,
@@ -48,9 +47,9 @@ export class LoginPage implements OnInit {
   loginUser(value: Credentials) {
     this.authService.loginUser(value)
     .then(res => {
-      console.log(res);
+      //console.log(res);
       this.errorMessage = '';
-      this.router.navigate(['/tabs/tab1'], { replaceUrl: true });
+      this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true });
     }, err => {
       this.errorMessage = err.message;
     });

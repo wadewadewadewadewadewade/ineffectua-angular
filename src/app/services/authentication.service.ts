@@ -10,6 +10,8 @@ export interface Credentials {
 @Injectable()
 export class AuthenticateService {
 
+  authenticatedUrl = '/tabs/calendar';
+
   constructor() {}
 
   registerUser(value: Credentials) {
@@ -35,7 +37,7 @@ export class AuthenticateService {
       if (firebase.auth().currentUser) {
         firebase.auth().signOut()
         .then(() => {
-          console.log('LOG Out');
+          console.log('Log Out');
           resolve();
         }).catch((error) => {
           reject();
@@ -47,4 +49,16 @@ export class AuthenticateService {
   userDetails(): firebase.User {
     return firebase.auth().currentUser;
   }
+
+  observe(success: any, fail: any): void {
+    firebase.auth().onAuthStateChanged((user: firebase.User) => {
+      if (user) {
+        success(user);
+      } else {
+        fail();
+      }
+    })
+    
+  }
+
 }
