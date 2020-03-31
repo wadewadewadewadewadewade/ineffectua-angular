@@ -1,0 +1,8 @@
+{
+  "appId": "com.ineffectua.mobile",
+  "appName": "ineffectua",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "cordova": {}
+}
