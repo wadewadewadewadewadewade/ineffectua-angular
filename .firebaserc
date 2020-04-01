@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "ineffectua": {
+      "hosting": {
+        "app": [
+          "ineffectua"
+        ]
+      }
+    }
+  }
+}

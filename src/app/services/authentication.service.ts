@@ -1,6 +1,8 @@
 // From https://www.freakyjolly.com/ionic-4-firebase-login-registration-by-email-and-password/
 import { Injectable } from '@angular/core';
-import * as firebase from 'firebase/app';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { first, tap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 export interface Credentials {
   email: string;
@@ -11,12 +13,13 @@ export interface Credentials {
 export class AuthenticateService {
 
   authenticatedUrl = '/tabs/calendar';
+  userId$ = new Subject<string>();
 
-  constructor() {}
+  constructor(private angularFireAuth: AngularFireAuth) {}
 
   registerUser(value: Credentials) {
    return new Promise<any>((resolve, reject) => {
-     firebase.auth().createUserWithEmailAndPassword(value.email, value.password)
+     this.angularFireAuth.createUserWithEmailAndPassword(value.email, value.password)
      .then(
        res => resolve(res),
        err => reject(err));
@@ -25,7 +28,7 @@ export class AuthenticateService {
 
   loginUser(value: Credentials) {
    return new Promise<any>((resolve, reject) => {
-     firebase.auth().signInWithEmailAndPassword(value.email, value.password)
+     this.angularFireAuth.signInWithEmailAndPassword(value.email, value.password)
      .then(
        res => resolve(res),
        err => reject(err));
@@ -34,8 +37,8 @@ export class AuthenticateService {
 
   logoutUser() {
     return new Promise((resolve, reject) => {
-      if (firebase.auth().currentUser) {
-        firebase.auth().signOut()
+      if (this.angularFireAuth.currentUser) {
+        this.angularFireAuth.signOut()
         .then(() => {
           console.log('Log Out');
           resolve();
@@ -46,19 +49,27 @@ export class AuthenticateService {
     });
   }
 
-  userDetails(): firebase.User {
-    return firebase.auth().currentUser;
+  isLoggedIn() {
+    return this.angularFireAuth.authState.pipe(first()).toPromise();
+  }
+
+  async getUser(success: any, fail?: any) {
+    const user = await this.isLoggedIn();
+    if (user) {
+      success(user);
+    } else {
+      fail();
+    }
   }
 
   observe(success: any, fail: any): void {
-    firebase.auth().onAuthStateChanged((user: firebase.User) => {
+    this.angularFireAuth.onAuthStateChanged((user: firebase.User) => {
       if (user) {
         success(user);
       } else {
         fail();
       }
-    })
-    
+    });
   }
 
 }

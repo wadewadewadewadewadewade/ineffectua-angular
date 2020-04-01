@@ -12,10 +12,8 @@ import { AppComponent } from './app.component';
 // Authentication
 import { environment } from 'src/environments/environment';
 import { AuthenticateService } from './services/authentication.service';
+import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
-import * as firebase from 'firebase';
-
-firebase.initializeApp(environment.firebase);
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,7 +22,8 @@ firebase.initializeApp(environment.firebase);
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     IonicModule.forRoot(),
     AppRoutingModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    AngularFireModule.initializeApp(environment.firebase),
   ],
   providers: [
     StatusBar,

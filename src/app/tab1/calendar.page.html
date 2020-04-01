@@ -14,8 +14,8 @@
   </ion-header>
 
   <ion-list>
-    <ion-item *ngFor="let appt of dates">
-      {{appt.start.date}} - {{appt.summary}}
+    <ion-item *ngFor="let appt of list">
+      {{appt.datetime}} - {{appt.title}}<br/>{{appt.description}}
     </ion-item>
   </ion-list>
   

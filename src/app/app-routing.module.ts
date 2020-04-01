@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes, Router } from '@angular/router';
 
 import { AuthenticateService } from './services/authentication.service';
-import * as firebase from 'firebase/app';
 
 const routes: Routes = [
   {

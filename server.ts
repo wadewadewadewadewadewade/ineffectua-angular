@@ -42,6 +42,15 @@ function run() {
 
   // Start up the Node server
   const server = app();
+
+  /*const { expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
+  server.use(expressCspHeader({
+    policies: {
+      'default-src': ['*'],
+      'img-src': [SELF],
+    }
+  }));*/
+
   server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
   });
