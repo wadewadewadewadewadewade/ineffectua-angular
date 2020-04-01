@@ -15,6 +15,9 @@ import { AuthenticationService } from './services/authentication.service';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 
+// Appointments
+import { NewAppointmentPageModule } from './tab1/new-appointment/new-appointment.module';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -23,6 +26,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
     IonicModule.forRoot(),
     AppRoutingModule,
     AngularFireAuthModule,
+    NewAppointmentPageModule,
     AngularFireModule.initializeApp(environment.firebase),
   ],
   providers: [

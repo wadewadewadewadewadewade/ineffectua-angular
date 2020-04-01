@@ -6,11 +6,10 @@
 
 <ion-content padding>
   <form class="form" [formGroup]="validationsForm"  (ngSubmit)="addAppointment(validationsForm.value)">
-
     <ion-item>
       <ion-label position="floating" color="primary">Date/Time</ion-label>
       <ion-input type="text" formControlName="datetime" class="hotfix" required></ion-input>
-      <ion-datetime displayFormat="MMMM D YYYY h:mmA" [(ngModel)]="datetimeHotfix" class="form-controll" [ngModelOptions]="{standalone: true}" required></ion-datetime>
+      <ion-datetime displayFormat="MMM DD, YYYY HH:mmA" class="form-controll" (ionChange)="updateDate($event)" required></ion-datetime>
     </ion-item>
     <div class="validation-errors">
       <ng-container *ngFor="let validation of validationMessages.datetime">

@@ -62,7 +62,7 @@ export class AuthenticationService {
     }
   }
 
-  observe(success: any, fail: any): void {
+  observe(success: any, fail?: any): void {
     this.angularFireAuth.onAuthStateChanged((user: firebase.User) => {
       if (user) {
         this.user = user; // since this gets called right at app load, save this user for later

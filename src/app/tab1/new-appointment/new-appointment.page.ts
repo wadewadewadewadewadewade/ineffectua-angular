@@ -24,19 +24,14 @@ export class NewAppointmentPage implements OnInit {
       { type: 'minlength', message: 'Title must be at least 5 characters long.' }
     ]
   };
-  datetimeHotfix = new FormControl('');
 
-  constructor(private db: AngularFireDatabase, private auth: AuthenticationService, private formBuilder: FormBuilder, public modalController: ModalController) {
-    this.datetimeHotfix.valueChanges.subscribe((val: string) => {
-      this.validationsForm.patchValue({ datetime: val});
-    })
-  }
+  constructor(private db: AngularFireDatabase, private auth: AuthenticationService, private formBuilder: FormBuilder, public modalController: ModalController) {}
 
   ngOnInit() {
     this.validationsForm = this.formBuilder.group({
       datetime: new FormControl('', Validators.compose([
         Validators.required,
-        Validators.pattern('([a-z]+)\s([0-9]{1,2})\s([0-9]{4})\s([0-9]{1,2})\:([0-9]{2})(AM|PM)')
+        Validators.pattern('([0-2][0-9]{3})\-([0-1][0-9])\-([0-3][0-9])T([0-5][0-9])\:([0-5][0-9])\:([0-5][0-9](\.[0-9]{3})?)(Z|([\-\+]([0-1][0-9])\:00))')
       ])),
       title: new FormControl('', Validators.compose([
         Validators.minLength(5),
@@ -48,6 +43,10 @@ export class NewAppointmentPage implements OnInit {
     });
   }
 
+  updateDate($event: CustomEvent) {
+    this.validationsForm.patchValue({ datetime: $event.detail.value });
+  }
+
   dismiss() {
     this.modalController.dismiss({
       'dismissed': true
@@ -57,7 +56,7 @@ export class NewAppointmentPage implements OnInit {
   addAppointment(appt: Appointment) {
     const user = this.auth.user;
     if (user) {
-      this.db.object('/users/' + user.providerData[0].uid + '/appointments')
+      this.db.object('/users/' + user.uid + '/appointments')
         .set(appt);
       this.dismiss();
     }

@@ -4,7 +4,7 @@ import { AuthenticationService } from '../services/authentication.service';
 // import { HttpClient } from '@angular/common/http';
 
 // Calendar API credentials
-import { AngularFireDatabase } from '@angular/fire/database';
+import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -27,14 +27,12 @@ export interface Appointment {
 })
 export class CalendarPage {
 
-  list: Observable<Appointment[]>;
+  public appointments: Observable<Appointment[]>;
 
   constructor(private db: AngularFireDatabase, private auth: AuthenticationService, public modalController: ModalController) {
-    const user = this.auth.user;
-    if (user) {
-      this.list = db.object('/users/' + user.providerData[0].uid + '/appointments')
-        .valueChanges().pipe(map(o => o as Appointment[]));
-    }
+    this.auth.observe((user: firebase.User) => {
+      this.appointments = this.db.list<Appointment>('/users/' + user.uid + '/appointments').valueChanges();
+    }) 
   }
 
   async addAppointment() {

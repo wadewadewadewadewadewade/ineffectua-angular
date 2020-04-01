@@ -14,7 +14,7 @@
   </ion-header>
 
   <ion-list>
-    <ion-item *ngFor="let appt of list">
+    <ion-item *ngFor="let appt of appointments | async">
       {{appt.datetime}} - {{appt.title}}<br/>{{appt.description}}
     </ion-item>
   </ion-list>
