@@ -28,6 +28,7 @@
     "@angular/router": "~9.1.0",
     "@capacitor/android": "^1.5.2",
     "@capacitor/core": "^1.5.2",
+    "@ionic-native/contacts": "^5.23.0",
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/google-plus": "^5.23.0",
     "@ionic-native/splash-screen": "^5.0.0",

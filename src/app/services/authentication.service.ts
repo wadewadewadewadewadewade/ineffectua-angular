@@ -1,8 +1,7 @@
 // From https://www.freakyjolly.com/ionic-4-firebase-login-registration-by-email-and-password/
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { first, tap } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 export interface Credentials {
   email: string;
@@ -13,7 +12,7 @@ export interface Credentials {
 export class AuthenticateService {
 
   authenticatedUrl = '/tabs/calendar';
-  userId$ = new Subject<string>();
+  user: firebase.User;
 
   constructor(private angularFireAuth: AngularFireAuth) {}
 
@@ -41,6 +40,7 @@ export class AuthenticateService {
         this.angularFireAuth.signOut()
         .then(() => {
           console.log('Log Out');
+          this.user = null;
           resolve();
         }).catch((error) => {
           reject();
@@ -65,6 +65,7 @@ export class AuthenticateService {
   observe(success: any, fail: any): void {
     this.angularFireAuth.onAuthStateChanged((user: firebase.User) => {
       if (user) {
+        this.user = user; // since this gets called right at app load, save this user for later
         success(user);
       } else {
         fail();

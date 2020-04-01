@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>new-appointment</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <form class="form" [formGroup]="validationsForm"  (ngSubmit)="add(validationsForm.value)">
+
+    <ion-item>
+      <ion-label position="floating" color="primary">Date/Time</ion-label>
+      <ion-input type="datetime" formControlName="datetime" required></ion-input>
+    </ion-item>
+    <div class="validation-errors">
+      <ng-container *ngFor="let validation of validationMessages.datetime">
+        <div class="error-message" *ngIf="validationsForm.get('datetime').hasError(validation.type) && (validationsForm.get('datetime').dirty || validationsForm.get('datetime').touched)">
+          {{ validation.message }}
+        </div>
+      </ng-container>
+    </div>
+
+    <ion-item>
+      <ion-label position="floating" color="primary">Title</ion-label>
+      <ion-input type="text" formControlName="title" class="form-controll" required></ion-input>
+    </ion-item>
+    <div class="validation-errors">
+      <ng-container *ngFor="let validation of validationMessages.title">
+        <div class="error-message" *ngIf="validationsForm.get('title').hasError(validation.type) && (validationsForm.get('title').dirty || validationsForm.get('title').touched)">
+          {{ validation.message }}
+        </div>
+      </ng-container>
+    </div>
+
+    <ion-item>
+      <ion-label position="floating" color="primary">Contact</ion-label>
+      <ion-input type="text" formControlName="contact" class="form-controll"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating" color="primary">Location</ion-label>
+      <ion-input type="text" formControlName="location" class="form-controll"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating" color="primary">Notes</ion-label>
+      <ion-textarea type="text" formControlName="description" class="form-controll"></ion-textarea>
+    </ion-item>
+
+    <ion-button  class="submit-btn" type="submit"  [disabled]="!validationsForm.valid">Add</ion-button>
+
+    <label class="error-message">{{errorMessage}}</label>
+  </form>
+
+</ion-content>
