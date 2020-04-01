@@ -11,7 +11,7 @@ import { AppComponent } from './app.component';
 
 // Authentication
 import { environment } from 'src/environments/environment';
-import { AuthenticateService } from './services/authentication.service';
+import { AuthenticationService } from './services/authentication.service';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 
@@ -28,7 +28,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
   providers: [
     StatusBar,
     SplashScreen,
-    AuthenticateService,
+    AuthenticationService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

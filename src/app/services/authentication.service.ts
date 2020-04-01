@@ -9,7 +9,7 @@ export interface Credentials {
 }
 
 @Injectable()
-export class AuthenticateService {
+export class AuthenticationService {
 
   authenticatedUrl = '/tabs/calendar';
   user: firebase.User;

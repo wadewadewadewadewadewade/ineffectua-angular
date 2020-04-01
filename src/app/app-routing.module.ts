@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes, Router } from '@angular/router';
 
-import { AuthenticateService } from './services/authentication.service';
+import { AuthenticationService } from './services/authentication.service';
 
 const routes: Routes = [
   {
@@ -32,7 +32,7 @@ export class AppRoutingModule {
 
   userProfile: any = null;
 
-  constructor(private authService: AuthenticateService, private router: Router) {
+  constructor(private authService: AuthenticationService, private router: Router) {
     this.authService.observe((user: firebase.User) => {
       if (this.router.url.indexOf('/tabs/') < 0) {
         this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true });

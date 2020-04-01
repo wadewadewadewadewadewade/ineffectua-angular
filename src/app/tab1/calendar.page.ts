@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthenticateService } from '../services/authentication.service';
+import { AuthenticationService } from '../services/authentication.service';
 // import { StorageMap } from '@ngx-pwa/local-storage';
 // import { HttpClient } from '@angular/common/http';
 
@@ -29,7 +29,7 @@ export class CalendarPage {
 
   list: Observable<Appointment[]>;
 
-  constructor(private db: AngularFireDatabase, private auth: AuthenticateService, public modalController: ModalController) {
+  constructor(private db: AngularFireDatabase, private auth: AuthenticationService, public modalController: ModalController) {
     const user = this.auth.user;
     if (user) {
       this.list = db.object('/users/' + user.providerData[0].uid + '/appointments')

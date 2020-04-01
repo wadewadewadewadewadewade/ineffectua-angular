@@ -7,6 +7,7 @@ import { CalendarPage } from './calendar.page';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
 import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { NewAppointmentPageModule } from './new-appointment/new-appointment.module';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
     FormsModule,
     ExploreContainerComponentModule,
     AngularFireDatabaseModule,
+    NewAppointmentPageModule,
     RouterModule.forChild([{ path: '', component: CalendarPage }]),
   ],
   declarations: [CalendarPage]

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { AuthenticateService, Credentials } from '../services/authentication.service';
+import { AuthenticationService, Credentials } from '../services/authentication.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -27,7 +27,7 @@ export class RegisterPage implements OnInit {
 
   constructor(
     private router: Router,
-    private authService: AuthenticateService,
+    private authService: AuthenticationService,
     private formBuilder: FormBuilder
   ) {}
 
