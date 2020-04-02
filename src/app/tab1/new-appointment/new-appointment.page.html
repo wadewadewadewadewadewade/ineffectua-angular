@@ -51,5 +51,7 @@
 
     <label class="error-message">{{errorMessage}}</label>
   </form>
-
+  <ion-fab *ngIf="key" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="deleteAppointment()" fill="clear"><ion-icon name="trash-outline" color="white"></ion-icon></ion-fab-button>
+  </ion-fab>
 </ion-content>

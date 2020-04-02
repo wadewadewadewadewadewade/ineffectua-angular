@@ -5,6 +5,7 @@ import { AngularFireDatabase } from '@angular/fire/database';
 import { AuthenticationService } from '../../services/authentication.service';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { ModalController, NavParams } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-new-appointment',
@@ -33,7 +34,8 @@ export class NewAppointmentPage implements OnInit {
     private auth: AuthenticationService,
     private formBuilder: FormBuilder,
     public modalController: ModalController,
-    public navParams: NavParams) {}
+    public navParams: NavParams,
+    public alertController: AlertController) {}
 
   ngOnInit() {
     this.validationsForm = this.formBuilder.group({
@@ -59,7 +61,6 @@ export class NewAppointmentPage implements OnInit {
           return appt;
         })))
           .subscribe((appt: Appointment[]) => {
-            console.log('appt', appt);
             this.picker = appt[0].datetime;
             this.validationsForm.controls.datetime.setValue(appt[0].datetime);
             this.validationsForm.controls.title.setValue(appt[0].title);
@@ -81,14 +82,41 @@ export class NewAppointmentPage implements OnInit {
     });
   }
 
+  async deleteAppointment() {
+    const alert = await this.alertController.create({
+      header: 'Confirm!',
+      message: 'Are you sure you would like to delete this appointment?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            // console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Delete',
+          handler: () => {
+            const user = this.auth.user;
+            if (this.key && user) {
+              this.db.list('/users/' + user.uid + '/appointments').remove(this.key);
+              this.dismiss();
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
   addAppointment(appt: Appointment) {
     const user = this.auth.user;
     if (user) {
       if (this.key) {
-        this.db.list('/users/' + user.uid + '/appointments').update(this.key, { content: appt });
+        delete appt.key;
+        this.db.object('/users/' + user.uid + '/appointments/' + this.key).set(appt);
       } else {
-        this.db.list('/users/' + user.uid + '/appointments')
-          .push(appt);
+        this.db.list('/users/' + user.uid + '/appointments').push(appt);
       }
       this.dismiss();
     }

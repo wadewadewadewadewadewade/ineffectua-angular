@@ -3,6 +3,10 @@
     <ion-title>
       Appointments
     </ion-title>
+    <ion-buttons slot="end">
+      <ion-label color="primary">Upcoming Only</ion-label>
+      <ion-button><ion-checkbox checked="true" (ionChange)="checkboxChange($event)"></ion-checkbox></ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -14,7 +18,7 @@
   </ion-header>
 
   <ion-list>
-    <ion-item *ngFor="let appt of (appointments | async)?.reverse()" (click)="edit(appt.key)">
+    <ion-item *ngFor="let appt of (appointments | async)" (click)="edit(appt.key)">
       <span [innerHTML]="parseDate(appt.datetime)"></span>
       <span>{{appt.title}}</span>{{appt.description}}
     </ion-item>

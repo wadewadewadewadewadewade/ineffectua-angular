@@ -27,21 +27,55 @@ export interface Appointment {
 export class CalendarPage implements OnInit {
 
   public appointments = new Observable<Appointment[]>();
+  public showOnlyUpcoming = true;
 
   constructor(private db: AngularFireDatabase, private auth: AuthenticationService, public modalController: ModalController) {}
 
   ngOnInit() {
+    this.getAppointmentList();
+  }
+
+  getNowDateIsoString() {
+    const d = new Date(),
+      tzo = -d.getTimezoneOffset(),
+      dif = tzo >= 0 ? '+' : '-',
+      pad = (num: number) => {
+          const norm = Math.floor(Math.abs(num));
+          return (norm < 10 ? '0' : '') + norm;
+      };
+    return d.getFullYear() +
+      '-' + pad(d.getMonth() + 1) +
+      '-' + pad(d.getDate()) +
+      'T' + pad(d.getHours()) +
+      ':' + pad(d.getMinutes()) +
+      ':' + pad(d.getSeconds()) +
+      dif + pad(tzo / 60) +
+      ':' + pad(tzo % 60);
+  }
+
+  getAppointmentList() {
     this.auth.observe((user: firebase.User) => {
       this.appointments = this.db
-        .list<Appointment>('/users/' + this.auth.user.uid + '/appointments'/*,
-          ref => ref.orderByChild('datetime').startAt(new Date().toLocaleString(), 'datetime') doesn't work yet - I don't think I can compare like this
-        */)
+        .list<Appointment>('/users/' + this.auth.user.uid + '/appointments',
+          ref => {
+            if (this.showOnlyUpcoming) {
+              return ref.orderByChild('datetime').startAt(this.getNowDateIsoString());
+            } else {
+              return ref.orderByChild('datetime');
+            }
+          }
+        )
         .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
           const appt: Appointment = p.payload.val();
           appt.key = p.key;
           return appt;
         })));
     });
+  }
+
+  checkboxChange($event: CustomEvent) {
+    this.showOnlyUpcoming = $event.detail.checked;
+    this.getAppointmentList();
   }
 
   async addAppointment() {
