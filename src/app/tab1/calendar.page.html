@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 1
+      Appointments
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -14,8 +14,9 @@
   </ion-header>
 
   <ion-list>
-    <ion-item *ngFor="let appt of appointments | async">
-      {{appt.datetime}} - {{appt.title}}<br/>{{appt.description}}
+    <ion-item *ngFor="let appt of (appointments | async)">
+      <span [innerHTML]="parseDate(appt.datetime)"></span>
+      <span>{{appt.title}}</span>{{appt.description}}
     </ion-item>
   </ion-list>
   

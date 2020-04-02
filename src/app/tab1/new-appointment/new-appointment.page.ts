@@ -56,8 +56,8 @@ export class NewAppointmentPage implements OnInit {
   addAppointment(appt: Appointment) {
     const user = this.auth.user;
     if (user) {
-      this.db.object('/users/' + user.uid + '/appointments')
-        .set(appt);
+      this.db.list('/users/' + user.uid + '/appointments')
+        .push(appt);
       this.dismiss();
     }
   }

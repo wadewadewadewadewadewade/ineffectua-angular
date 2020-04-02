@@ -14,7 +14,12 @@ export class AuthenticationService {
   authenticatedUrl = '/tabs/calendar';
   user: firebase.User;
 
-  constructor(private angularFireAuth: AngularFireAuth) {}
+  constructor(private angularFireAuth: AngularFireAuth) {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      this.user = JSON.parse(userJson);
+    }
+  }
 
   registerUser(value: Credentials) {
    return new Promise<any>((resolve, reject) => {
@@ -38,37 +43,24 @@ export class AuthenticationService {
     return new Promise((resolve, reject) => {
       if (this.angularFireAuth.currentUser) {
         this.angularFireAuth.signOut()
-        .then(() => {
-          console.log('Log Out');
-          this.user = null;
-          resolve();
-        }).catch((error) => {
-          reject();
-        });
+        .then(() => resolve())
+        .catch((error) => reject());
       }
     });
-  }
-
-  isLoggedIn() {
-    return this.angularFireAuth.authState.pipe(first()).toPromise();
-  }
-
-  async getUser(success: any, fail?: any) {
-    const user = await this.isLoggedIn();
-    if (user) {
-      success(user);
-    } else {
-      fail();
-    }
   }
 
   observe(success: any, fail?: any): void {
     this.angularFireAuth.onAuthStateChanged((user: firebase.User) => {
       if (user) {
-        this.user = user; // since this gets called right at app load, save this user for later
+        this.user = user;
+        localStorage.setItem('user', JSON.stringify(user));
         success(user);
       } else {
-        fail();
+        this.user = null;
+        localStorage.removeItem('user');
+        if (fail) {
+          fail();
+        }
       }
     });
   }

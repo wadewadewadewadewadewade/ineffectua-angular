@@ -33,7 +33,7 @@ import { NewAppointmentPageModule } from './tab1/new-appointment/new-appointment
     StatusBar,
     SplashScreen,
     AuthenticationService,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent]
 })

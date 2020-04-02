@@ -41,7 +41,8 @@ function run() {
   const port = process.env.PORT || 4000;
 
   // Start up the Node server
-  const server = app();
+  const server = app(),
+    cors = require('cors');
 
   /*const { expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
   server.use(expressCspHeader({
@@ -50,6 +51,18 @@ function run() {
       'img-src': [SELF],
     }
   }));*/
+  const originsWhitelist = [
+    'http://localhost:4200', // this is my front-end url for development
+     'http://ineffectua.com'
+  ];
+  const corsOptions = {
+    origin: (origin: string, callback: any) => {
+          const isWhitelisted = originsWhitelist.indexOf(origin) !== -1;
+          callback(null, isWhitelisted);
+    },
+    credentials: true
+  };
+  server.use(cors(corsOptions));
 
   server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);

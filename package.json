@@ -39,6 +39,7 @@
     "@ngx-pwa/local-storage": "^9.0.3",
     "cordova-plugin-googleplus": "^8.4.0",
     "core-js": "^2.5.4",
+    "cors": "^2.8.5",
     "express": "^4.15.2",
     "express-csp-header": "^3.0.0",
     "firebase": "^7.13.1",

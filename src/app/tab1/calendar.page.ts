@@ -1,18 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../services/authentication.service';
-// import { StorageMap } from '@ngx-pwa/local-storage';
-// import { HttpClient } from '@angular/common/http';
 
 // Calendar API credentials
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 // new appointment
 import { ModalController } from '@ionic/angular';
 import { NewAppointmentPage } from './new-appointment/new-appointment.page';
 
 export interface Appointment {
+  'key': string;
   'contact': string;
   'datetime': Date;
   'description': string;
@@ -25,14 +23,18 @@ export interface Appointment {
   templateUrl: 'calendar.page.html',
   styleUrls: ['calendar.page.scss']
 })
-export class CalendarPage {
+export class CalendarPage implements OnInit {
 
-  public appointments: Observable<Appointment[]>;
+  public appointments = new Observable<Appointment[]>();
 
-  constructor(private db: AngularFireDatabase, private auth: AuthenticationService, public modalController: ModalController) {
+  constructor(private db: AngularFireDatabase, private auth: AuthenticationService, public modalController: ModalController) {}
+
+  ngOnInit() {
     this.auth.observe((user: firebase.User) => {
-      this.appointments = this.db.list<Appointment>('/users/' + user.uid + '/appointments').valueChanges();
-    }) 
+      this.appointments = this.db
+        .list<Appointment>('/users/' + this.auth.user.uid + '/appointments', ref => ref.orderByChild('datetime'))
+        .valueChanges();
+    });
   }
 
   async addAppointment() {
@@ -40,6 +42,10 @@ export class CalendarPage {
       component: NewAppointmentPage
     });
     return await modal.present();
+  }
+
+  parseDate(dateString: string): string {
+    return new Date(dateString).toLocaleString().replace(', ', '<br/>');
   }
 
 }
