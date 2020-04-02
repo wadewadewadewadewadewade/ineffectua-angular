@@ -14,7 +14,7 @@
   </ion-header>
 
   <ion-list>
-    <ion-item *ngFor="let appt of (appointments | async)">
+    <ion-item *ngFor="let appt of (appointments | async)?.reverse()">
       <span [innerHTML]="parseDate(appt.datetime)"></span>
       <span>{{appt.title}}</span>{{appt.description}}
     </ion-item>

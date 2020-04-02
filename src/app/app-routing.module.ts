@@ -14,7 +14,8 @@ const routes: Routes = [
   },
   {
     path: 'tabs',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule),
+    canLoad: [AuthenticationService]
   },
   { path: '', loadChildren: './tabs/tabs.module#TabsPageModule' },
   {
@@ -26,7 +27,8 @@ const routes: Routes = [
   imports: [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, initialNavigation: 'enabled' })
   ],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  providers: [AuthenticationService]
 })
 export class AppRoutingModule {
 
