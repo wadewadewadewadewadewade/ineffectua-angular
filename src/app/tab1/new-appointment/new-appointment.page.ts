@@ -1,9 +1,10 @@
+import { map } from 'rxjs/operators';
+import { Appointment } from './../calendar.page';
 import { Component, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AuthenticationService } from '../../services/authentication.service';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { Appointment } from '../calendar.page';
-import { ModalController } from '@ionic/angular';
+import { ModalController, NavParams } from '@ionic/angular';
 
 @Component({
   selector: 'app-new-appointment',
@@ -24,8 +25,15 @@ export class NewAppointmentPage implements OnInit {
       { type: 'minlength', message: 'Title must be at least 5 characters long.' }
     ]
   };
+  picker = '';
+  key: string;
 
-  constructor(private db: AngularFireDatabase, private auth: AuthenticationService, private formBuilder: FormBuilder, public modalController: ModalController) {}
+  constructor(
+    private db: AngularFireDatabase,
+    private auth: AuthenticationService,
+    private formBuilder: FormBuilder,
+    public modalController: ModalController,
+    public navParams: NavParams) {}
 
   ngOnInit() {
     this.validationsForm = this.formBuilder.group({
@@ -41,6 +49,26 @@ export class NewAppointmentPage implements OnInit {
       location: new FormControl(''),
       description: new FormControl('')
     });
+    this.key = this.navParams.get('key');
+    if (this.key) {
+      this.auth.observe((user: firebase.User) => {
+        this.db.list('/users/' + user.uid + '/appointments', ref => ref.orderByKey().equalTo(this.key))
+        .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
+          const appt: Appointment = p.payload.val();
+          appt.key = p.key;
+          return appt;
+        })))
+          .subscribe((appt: Appointment[]) => {
+            console.log('appt', appt);
+            this.picker = appt[0].datetime;
+            this.validationsForm.controls.datetime.setValue(appt[0].datetime);
+            this.validationsForm.controls.title.setValue(appt[0].title);
+            this.validationsForm.controls.contact.setValue(appt[0].contact);
+            this.validationsForm.controls.location.setValue(appt[0].location);
+            this.validationsForm.controls.description.setValue(appt[0].description);
+        });
+      });
+    }
   }
 
   updateDate($event: CustomEvent) {
@@ -56,8 +84,12 @@ export class NewAppointmentPage implements OnInit {
   addAppointment(appt: Appointment) {
     const user = this.auth.user;
     if (user) {
-      this.db.list('/users/' + user.uid + '/appointments')
-        .push(appt);
+      if (this.key) {
+        this.db.list('/users/' + user.uid + '/appointments').update(this.key, { content: appt });
+      } else {
+        this.db.list('/users/' + user.uid + '/appointments')
+          .push(appt);
+      }
       this.dismiss();
     }
   }

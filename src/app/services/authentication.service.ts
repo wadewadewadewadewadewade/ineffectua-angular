@@ -2,7 +2,7 @@ import { first } from 'rxjs/operators';
 // From https://www.freakyjolly.com/ionic-4-firebase-login-registration-by-email-and-password/
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { ActivatedRouteSnapshot, CanLoad } from '@angular/router';
+import { Router, CanLoad } from '@angular/router';
 import { Route } from '@angular/compiler/src/core';
 
 export interface Credentials {
@@ -18,15 +18,20 @@ export class AuthenticationService implements CanLoad {
   authenticatedUrl = '/tabs/calendar';
   user: firebase.User;
 
-  constructor(private angularFireAuth: AngularFireAuth) {}
+  constructor(private angularFireAuth: AngularFireAuth, private router: Router) {}
 
   canLoad(route: Route): Promise<boolean> {
     return new Promise(resolve =>
       this.isLoggedIn()
         .then(user => {
-          resolve(user !== null);
+          if (user) {
+            resolve(user !== null);
+          } else {
+            this.router.navigate(['/']);
+          }
         })
         .catch(() => {
+          this.router.navigate(['/']);
           resolve(false);
         })
     );

@@ -9,7 +9,7 @@
     <ion-item>
       <ion-label position="floating" color="primary">Date/Time</ion-label>
       <ion-input type="text" formControlName="datetime" class="hotfix" required></ion-input>
-      <ion-datetime displayFormat="MMM DD, YYYY HH:mmA" class="form-controll" (ionChange)="updateDate($event)" required></ion-datetime>
+      <ion-datetime [(value)]="picker" displayFormat="MMM DD, YYYY HH:mmA" class="form-controll" (ionChange)="updateDate($event)" required></ion-datetime>
     </ion-item>
     <div class="validation-errors">
       <ng-container *ngFor="let validation of validationMessages.datetime">
@@ -46,7 +46,7 @@
       <ion-textarea type="text" formControlName="description" class="form-controll"></ion-textarea>
     </ion-item>
 
-    <ion-button color="primary" expand="full" type="submit"  [disabled]="!validationsForm.valid">Add</ion-button>
+    <ion-button color="primary" expand="full" type="submit"  [disabled]="!validationsForm.valid">{{ key ? 'Save' : 'Add' }}</ion-button>
     <ion-button color="secondary" fill="clear" expand="full" (click)="dismiss()">Cancel</ion-button>
 
     <label class="error-message">{{errorMessage}}</label>
