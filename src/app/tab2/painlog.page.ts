@@ -3,11 +3,12 @@ import { Observable } from 'rxjs';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { map } from 'rxjs/operators';
 import { AuthenticationService } from '../services/authentication.service';
+import { AlertController } from '@ionic/angular';
 
 export interface Location {
   'key': string;
-  'x': number;
-  'y': number;
+  'x': string;
+  'y': string;
   'severity': number;
   'added': string;
   'removed': string;
@@ -22,8 +23,9 @@ export interface Location {
 export class PainLogPage implements OnInit {
 
   public locations = new Observable<Location[]>();
+  public activeLocation: Location;
 
-  constructor(private db: AngularFireDatabase, private auth: AuthenticationService) {}
+  constructor(private db: AngularFireDatabase, public alertController: AlertController, private auth: AuthenticationService) {}
 
   ngOnInit() {
     this.getLocationsList();
@@ -61,30 +63,77 @@ export class PainLogPage implements OnInit {
       ':' + pad(tzo % 60);
   }
 
-  getCordinates($event: MouseEvent) {
-    const loc: Location = {
+  getLocation(x: string = null, y: string = null): Location {
+    return {
       key: null,
-      x: $event.clientX,
-      y: $event.clientY,
+      x: x,
+      y: y,
       severity: 0,
       label: '',
       added: this.getNowDateIsoString(),
       removed: null
     };
-    this.addLocation(loc);
+  }
+
+  getCordinates($event: MouseEvent) {
+    console.log($event);
+    window['wade'] = event;
+    const body = $event.target as HTMLElement,
+      container = body.parentElement.parentElement,
+      containerWidth = container.offsetWidth,
+      containerHeight = container.offsetHeight,
+      xAsPercent = Math.round((($event.clientX / containerWidth)  + Number.EPSILON) * 10000) / 100,
+      yAsPercent = Math.round((($event.clientY / containerHeight)  + Number.EPSILON) * 10000) / 100;
+    if (this.activeLocation) {
+      this.activeLocation.x = xAsPercent + '%';
+      this.activeLocation.y = yAsPercent + '%';
+      this.addLocation(this.activeLocation);
+    }
   }
 
   addLocation(loc?: Location) {
     const user = this.auth.user;
     if (user) {
-      if (loc.key) {
+      if (loc && loc.key) {
         const key = loc.key;
         delete loc.key;
-        this.db.object('/users/' + user.uid + '/appointments/' + key).set(loc);
+        this.db.object('/users/' + user.uid + '/painlog/' + key).set(loc);
       } else {
-        this.db.list('/users/' + user.uid + '/appointments').push(loc);
+        this.activeLocation = this.getLocation();
+        this.db.list('/users/' + user.uid + '/painlog').push(this.activeLocation).then(ref => {
+          this.activeLocation.key = ref.key;
+        });
       }
     }
+  }
+
+  async deleteLocation(loc: Location) {
+    const alert = await this.alertController.create({
+      header: 'Confirm!',
+      message: 'Are you sure you would like to delete this location?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            // console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Delete',
+          handler: () => {
+            const user = this.auth.user;
+            if (user) {
+              if (loc.key) {
+                loc.removed = this.getNowDateIsoString();
+                this.addLocation(loc);
+              }
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
 }

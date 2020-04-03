@@ -4,8 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { AuthenticationService } from '../../services/authentication.service';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { ModalController, NavParams } from '@ionic/angular';
-import { AlertController } from '@ionic/angular';
+import { ModalController, NavParams, AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-new-appointment',
