@@ -15,19 +15,22 @@ ion-content ion-toolbar {
   .mark {
     position: absolute;
     width:0;
-    top:0;
+    padding:1vh 0 0 8em;
+    margin-top:-50px;
     overflow:visible;
     z-index:2;
     svg {
       position: absolute;
       width:5vh;
-      bottom:calc(-100% + 3vh);
-      left:-1.8vh;
+      top:50%;
+      left:0;
       fill:red;
 
     }
     ion-item {
       width: 7em;
+      margin-left:-7em;
+      margin-top:-1vh;
       border-bottom:solid 1px red;
       ion-input {
         width: 50em;

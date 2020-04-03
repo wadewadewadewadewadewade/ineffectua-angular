@@ -15,7 +15,7 @@
 
   <div class="figure">
 
-    <form *ngFor="let location of (locations | async)" [style.left]="location.x" [style.top]="location.y" class="mark" (ngSubmit)="addLocation(location)">
+    <form *ngFor="let location of (locations | async)" [style.left]="location.x" [style.top]="location.y" class="mark" (ngSubmit)="addLocation(location)" draggable [location]="location" [element]="this">
       <ion-item color="transparent" class="ion-no-padding">
         <ion-input type="text" (ionChange)="addLocation(location)" [(value)]="location.label" color="transparent" ></ion-input>
         <ion-button (click)="deleteLocation(location)" fill="clear" slot="end"><ion-icon name="trash-outline" color="white"></ion-icon></ion-button>

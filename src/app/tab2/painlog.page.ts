@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, Directive } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { map } from 'rxjs/operators';
@@ -25,7 +25,10 @@ export class PainLogPage implements OnInit {
   public locations = new Observable<Location[]>();
   public activeLocation: Location;
 
-  constructor(private db: AngularFireDatabase, public alertController: AlertController, private auth: AuthenticationService) {}
+  constructor(
+    private db: AngularFireDatabase,
+    public alertController: AlertController,
+    private auth: AuthenticationService) {}
 
   ngOnInit() {
     this.getLocationsList();
@@ -76,8 +79,7 @@ export class PainLogPage implements OnInit {
   }
 
   getCordinates($event: MouseEvent) {
-    console.log($event);
-    window['wade'] = event;
+    console.log("coords", $event);
     const body = $event.target as HTMLElement,
       container = body.parentElement.parentElement,
       containerWidth = container.offsetWidth,
