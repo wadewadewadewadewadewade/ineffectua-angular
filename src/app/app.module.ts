@@ -25,6 +25,7 @@ import { AngularDraggableModule } from 'angular2-draggable';
   declarations: [AppComponent],
   entryComponents: [],
   imports: [
+    AngularFireModule.initializeApp(environment.firebase),
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     IonicModule.forRoot(),
     AppRoutingModule,
@@ -32,7 +33,6 @@ import { AngularDraggableModule } from 'angular2-draggable';
     AngularDraggableModule,
     AngularFireAuthModule,
     AngularFireDatabaseModule,
-    AngularFireModule.initializeApp(environment.firebase),
   ],
   providers: [
     StatusBar,
