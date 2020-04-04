@@ -25,7 +25,7 @@ export class PainLogPage implements OnInit {
 
   public locations = new Observable<Location[]>();
 
-  @ViewChild("body") body: ElementRef;
+  @ViewChild('body') body: ElementRef;
 
   constructor(
     private db: AngularFireDatabase,
