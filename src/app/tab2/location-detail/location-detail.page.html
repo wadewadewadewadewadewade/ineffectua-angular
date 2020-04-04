@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Pain Log: More Info</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <form class="form" [formGroup]="validationsForm"  (ngSubmit)="updateLocation(validationsForm.value)">
+    <ion-item>
+      <ion-label position="floating" color="primary">label</ion-label>
+      <ion-input type="text" formControlName="label" class="form-controll" required></ion-input>
+    </ion-item>
+    <div class="validation-errors">
+      <ng-container *ngFor="let validation of validationMessages.label">
+        <div class="error-message" *ngIf="validationsForm.get('label').hasError(validation.type) && (validationsForm.get('label').dirty || validationsForm.get('label').touched)">
+          {{ validation.message }}
+        </div>
+      </ng-container>
+    </div>
+    <ion-item>
+      <ion-label position="floating" color="primary">Added</ion-label>
+      <ion-input type="text" formControlName="added" class="hotfix" required></ion-input>
+      <ion-datetime [(value)]="addedPicker" displayFormat="MMM DD, YYYY HH:mmA" class="form-controll" (ionChange)="updateDate($event, true)" required></ion-datetime>
+    </ion-item>
+    <div class="validation-errors">
+      <ng-container *ngFor="let validation of validationMessages.added">
+        <div class="error-message" *ngIf="validationsForm.get('added').hasError(validation.type) && (validationsForm.get('added').dirty || validationsForm.get('added').touched)">
+          {{ validation.message }}
+        </div>
+      </ng-container>
+    </div>
+
+    <ion-item>
+      <ion-label position="floating" color="secondary">Removed</ion-label>
+      <ion-input type="text" formControlName="removed" class="hotfix"></ion-input>
+      <ion-datetime [(value)]="removedPicker" displayFormat="MMM DD, YYYY HH:mmA" class="form-controll" (ionChange)="updateDate($event, false)"></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating" color="secondary">Severity</ion-label>
+      <ion-input type="number" step="1" min="0" max="10" formControlName="severity" class="form-controll"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating" color="secondary">Description</ion-label>
+      <ion-textarea type="text" formControlName="description" class="form-controll"></ion-textarea>
+    </ion-item>
+
+    <ion-button color="primary" expand="full" type="submit"  [disabled]="!validationsForm.valid">Save</ion-button>
+    <ion-button color="secondary" fill="clear" expand="full" (click)="dismiss()">Cancel</ion-button>
+
+    <label class="error-message">{{errorMessage}}</label>
+  </form>
+  <ion-fab *ngIf="location" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="deleteLocation()" fill="clear"><ion-icon name="trash-outline" color="white"></ion-icon></ion-fab-button>
+  </ion-fab>
+</ion-content>

@@ -17,8 +17,9 @@
 
     <div *ngFor="let location of (locations | async)" [style.left]="location.x" [style.top]="location.y" class="mark" ngDraggable (stopped)="stoppedDragging($event, location)">
       <form (ngSubmit)="addLocation(location)" >
-        <ion-item color="transparent" class="ion-no-padding">
-          <ion-input type="text" (ionChange)="addLocation(location)" [(value)]="location.label" color="transparent" ></ion-input>
+        <ion-item color="transparent" class="ion-no-padding" (click)="$event.stopPropagation()">
+          <ion-input type="text" [(value)]="location.label" color="transparent" readonly></ion-input>
+          <ion-button (click)="infoLocation(location)" fill="clear" slot="end"><ion-icon name="information-circle-outline" color="white"></ion-icon></ion-button>
           <ion-button (click)="deleteLocation(location)" fill="clear" slot="end"><ion-icon name="trash-outline" color="white"></ion-icon></ion-button>
         </ion-item>
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="170 0 650 1000" enable-background="new 170 0 650 1000" xml:space="preserve">

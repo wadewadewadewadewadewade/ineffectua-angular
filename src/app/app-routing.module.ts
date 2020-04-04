@@ -21,6 +21,10 @@ const routes: Routes = [
   {
     path: 'new-appointment',
     loadChildren: () => import('./tab1/new-appointment/new-appointment.module').then( m => m.NewAppointmentPageModule)
+  },
+  {
+    path: 'location-detail',
+    loadChildren: () => import('./tab2/location-detail/location-detail.module').then( m => m.LocationDetailPageModule)
   }
 ];
 @NgModule({

@@ -1,9 +1,13 @@
-import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, HostListener, Pipe, PipeTransform } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { map } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
 import { AuthenticationService } from '../services/authentication.service';
 import { AlertController } from '@ionic/angular';
+
+// location detail
+import { ModalController } from '@ionic/angular';
+import { LocationDetailPage } from './location-detail/location-detail.page';
 
 export interface Location {
   'key': string;
@@ -24,19 +28,25 @@ export interface Location {
 export class PainLogPage implements OnInit {
 
   public locations = new Observable<Location[]>();
+  private addedDate = '1970-01-01T00:00:00-07:00';
+  private removedDate = this.getNowDateIsoString();
 
   @ViewChild('body') body: ElementRef;
 
   constructor(
     private db: AngularFireDatabase,
     public alertController: AlertController,
-    private auth: AuthenticationService) {}
+    private auth: AuthenticationService,
+    public modalController: ModalController
+    ) {}
 
   ngOnInit() {
     this.getLocationsList();
   }
 
   getLocationsList() {
+    const added = new Date(this.addedDate),
+      removed = new Date(this.removedDate);
     this.auth.observe((user: firebase.User) => {
       this.locations = this.db
         .list<Location>('/users/' + this.auth.user.uid + '/painlog',
@@ -46,6 +56,17 @@ export class PainLogPage implements OnInit {
           const loc: Location = p.payload.val();
           loc.key = p.key;
           return loc;
+        }).filter((loc: Location) => {
+            const locationAdded = new Date(loc.added),
+              locationRemoved = new Date(loc.removed)
+            let ret = true;
+            if (!loc.added || locationAdded < added) {
+              ret = false;
+            }
+            if (loc.removed && locationRemoved < removed) {
+              ret = false;
+            }
+            return ret;
         })));
     });
   }
@@ -136,6 +157,14 @@ export class PainLogPage implements OnInit {
         this.db.list('/users/' + user.uid + '/painlog').push(loc);
       }
     }
+  }
+
+  async infoLocation(loc: Location) {
+    const modal = await this.modalController.create({
+      component: LocationDetailPage,
+      componentProps: { location: loc }
+    });
+    return await modal.present();
   }
 
   async deleteLocation(loc: Location) {

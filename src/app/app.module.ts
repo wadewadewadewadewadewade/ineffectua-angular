@@ -20,6 +20,7 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { NewAppointmentPageModule } from './tab1/new-appointment/new-appointment.module';
 // Painlog
 import { AngularDraggableModule } from 'angular2-draggable';
+import { LocationDetailPageModule } from './tab2/location-detail/location-detail.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -30,6 +31,7 @@ import { AngularDraggableModule } from 'angular2-draggable';
     IonicModule.forRoot(),
     AppRoutingModule,
     NewAppointmentPageModule,
+    LocationDetailPageModule,
     AngularDraggableModule,
     AngularFireAuthModule,
     AngularFireDatabaseModule,
