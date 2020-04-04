@@ -14,6 +14,7 @@ import { environment } from 'src/environments/environment';
 import { AuthenticationService } from './services/authentication.service';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
 
 // Appointments
 import { NewAppointmentPageModule } from './tab1/new-appointment/new-appointment.module';
@@ -27,9 +28,10 @@ import { AngularDraggableModule } from 'angular2-draggable';
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     IonicModule.forRoot(),
     AppRoutingModule,
-    AngularFireAuthModule,
     NewAppointmentPageModule,
     AngularDraggableModule,
+    AngularFireAuthModule,
+    AngularFireDatabaseModule,
     AngularFireModule.initializeApp(environment.firebase),
   ],
   providers: [
