@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PainLogPage } from './painlog.page';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
-import { DraggableDirective } from '../draggable.directive';
+import { AngularDraggableModule } from 'angular2-draggable';
 
 @NgModule({
   imports: [
@@ -13,9 +13,9 @@ import { DraggableDirective } from '../draggable.directive';
     CommonModule,
     FormsModule,
     ExploreContainerComponentModule,
+    AngularDraggableModule,
     RouterModule.forChild([{ path: '', component: PainLogPage }])
   ],
-  exports: [DraggableDirective],
-  declarations: [PainLogPage, DraggableDirective]
+  declarations: [PainLogPage]
 })
 export class PainLogPageModule {}

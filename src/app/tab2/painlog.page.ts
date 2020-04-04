@@ -13,6 +13,7 @@ export interface Location {
   'added': string;
   'removed': string;
   'label': string;
+  'description': string;
 }
 
 @Component({
@@ -23,7 +24,6 @@ export interface Location {
 export class PainLogPage implements OnInit {
 
   public locations = new Observable<Location[]>();
-  public activeLocation: Location;
 
   constructor(
     private db: AngularFireDatabase,
@@ -48,6 +48,14 @@ export class PainLogPage implements OnInit {
     });
   }
 
+  mouseup($event: MouseEvent, loc: Location) {
+    const temp = this.getCordinates($event, true);
+    loc.x = temp.x;
+    loc.y = temp.y;
+    console.log(loc, $event);
+    // this.addLocation(loc);
+  }
+
   getNowDateIsoString() {
     const d = new Date(),
       tzo = -d.getTimezoneOffset(),
@@ -69,31 +77,28 @@ export class PainLogPage implements OnInit {
   getLocation(x: string = null, y: string = null): Location {
     return {
       key: null,
-      x: x,
-      y: y,
+      x,
+      y,
       severity: 0,
       label: '',
       added: this.getNowDateIsoString(),
-      removed: null
+      removed: null,
+      description: null
     };
   }
 
-  getCordinates($event: MouseEvent) {
-    console.log("coords", $event);
+  getCordinates($event: MouseEvent, isMark: boolean): Location {
     const body = $event.target as HTMLElement,
-      container = body.parentElement.parentElement,
+      container = isMark ? body.parentElement.parentElement.parentElement : body.parentElement.parentElement,
       containerWidth = container.offsetWidth,
       containerHeight = container.offsetHeight,
       xAsPercent = Math.round((($event.clientX / containerWidth)  + Number.EPSILON) * 10000) / 100,
-      yAsPercent = Math.round((($event.clientY / containerHeight)  + Number.EPSILON) * 10000) / 100;
-    if (this.activeLocation) {
-      this.activeLocation.x = xAsPercent + '%';
-      this.activeLocation.y = yAsPercent + '%';
-      this.addLocation(this.activeLocation);
-    }
+      yAsPercent = Math.round((($event.clientY / containerHeight)  + Number.EPSILON) * 10000) / 100,
+      loc = this.getLocation(xAsPercent + '%', yAsPercent + '%');
+    return loc;
   }
 
-  addLocation(loc?: Location) {
+  addLocation(loc: Location) {
     const user = this.auth.user;
     if (user) {
       if (loc && loc.key) {
@@ -101,10 +106,7 @@ export class PainLogPage implements OnInit {
         delete loc.key;
         this.db.object('/users/' + user.uid + '/painlog/' + key).set(loc);
       } else {
-        this.activeLocation = this.getLocation();
-        this.db.list('/users/' + user.uid + '/painlog').push(this.activeLocation).then(ref => {
-          this.activeLocation.key = ref.key;
-        });
+        this.db.list('/users/' + user.uid + '/painlog').push(loc);
       }
     }
   }

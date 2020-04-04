@@ -17,6 +17,8 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 
 // Appointments
 import { NewAppointmentPageModule } from './tab1/new-appointment/new-appointment.module';
+// Painlog
+import { AngularDraggableModule } from 'angular2-draggable';
 
 @NgModule({
   declarations: [AppComponent],
@@ -27,6 +29,7 @@ import { NewAppointmentPageModule } from './tab1/new-appointment/new-appointment
     AppRoutingModule,
     AngularFireAuthModule,
     NewAppointmentPageModule,
+    AngularDraggableModule,
     AngularFireModule.initializeApp(environment.firebase),
   ],
   providers: [
