@@ -9,6 +9,8 @@ import { AlertController } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { LocationDetailPage } from './location-detail/location-detail.page';
 import { Event } from '@angular/router';
+import { RangeChangeEventDetail, RangeValue } from '@ionic/core';
+import { isDate } from 'util';
 
 export interface Location {
   'key': string;
@@ -29,12 +31,14 @@ export interface Location {
 export class PainLogPage implements OnInit {
 
   public locations = new Observable<Location[]>();
-  public range = 3;
-  public centered = 1;
   private addedDate = '1970-01-01T00:00:00-07:00';
   private removedDate = this.getDateIsoString();
   private oldest: Date;
   private newest: Date;
+  public range = 4;
+  public centered = 1;
+  public rangeLabel = 'all';
+  public dateLabel = this.getShortDateString(new Date());
 
   @ViewChild('body') body: ElementRef;
 
@@ -49,22 +53,46 @@ export class PainLogPage implements OnInit {
     this.getLocationsList();
   }
 
-  updateDate($event: Event, IsDate:boolean) {
-    const centeredDateInMilliseconds = ((this.newest.getTime() - this.oldest.getTime()) * this.centered) / 2 + this.oldest.getTime();
+  getShortDateString(d: Date): string {
+    const day = d.getDay(),
+      month = d.getMonth();
+    let dayString: string, monthString: string;
+    if (day < 10) {
+      dayString = '0' + day;
+    } else {
+      dayString = '' + day;
+    }
+    if (month < 10) {
+      monthString = '0' + month;
+    } else {
+      monthString = '' + month;
+    }
+    return d.getFullYear() + '-' + monthString + '-' + dayString;
+  }
+
+  updateDate($event: RangeChangeEventDetail, IsDate: boolean) {
+    const centeredDateInMilliseconds = ((this.newest.getTime() - this.oldest.getTime()) * this.centered) / 2 + this.oldest.getTime(),
+      centeredDate = new Date(centeredDateInMilliseconds);
+    this.dateLabel = this.getShortDateString(centeredDate);
+    console.log($event, IsDate);
     switch (this.range) {
       case 3: // all dates
+        this.rangeLabel = 'all';
         this.addedDate = '1970-01-01T00:00:00-07:00';
         this.removedDate = this.getDateIsoString();
         break;
       case 2: // 1 year
+        this.rangeLabel = '1yr';
         this.addedDate = this.getDateIsoString(centeredDateInMilliseconds - 1.577e+10); // minus 6 months
         this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 1.577e+10); // plus six months
         break;
       case 1: // 1 week
+        this.rangeLabel = '1wk';
         this.addedDate = this.getDateIsoString(centeredDateInMilliseconds - 3.024e+8); // minus 3.5 days
         this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 3.024e+8); // plus 3.5 days
         break;
       case 0: // 1 day
+        this.rangeLabel = '1d';
         this.addedDate = this.getDateIsoString(centeredDateInMilliseconds - 4.32e+7); // minus 0.5 days
         this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 4.32e+7); // plus 0.5 days
         break;
@@ -97,7 +125,7 @@ export class PainLogPage implements OnInit {
           return loc;
         }).filter((loc: Location) => {
             const locationAdded = new Date(loc.added),
-              locationRemoved = new Date(loc.removed)
+              locationRemoved = new Date(loc.removed);
             let ret = true;
             this.checkDate(locationAdded);
             this.checkDate(locationRemoved);

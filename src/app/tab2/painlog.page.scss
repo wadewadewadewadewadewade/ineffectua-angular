@@ -3,7 +3,7 @@ ion-content {
 }
 .figure { 
   width:calc((100vh - 112px) * 0.575);
-  margin:auto;
+  margin:calc((50vh - 229px) / 2) auto;
   --offset-top: auto;
   --offset-bottom: auto;
   position: relative;

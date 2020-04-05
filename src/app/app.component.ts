@@ -4,7 +4,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { SplashPage } from './splash/splash.page';
-//import { Animation } from '@ionic/core';
+// import { Animation } from '@ionic/core';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +17,7 @@ export class AppComponent {
     private statusBar: StatusBar,
     private splashScreen: SplashScreen,
     private modalController: ModalController,
-    //private animation: Animation
+    // private animation: Animation
   ) {
     this.initializeApp();
   }
@@ -25,7 +25,7 @@ export class AppComponent {
   initializeApp() {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
-      //this.displayCustomSplash();
+      // this.displayCustomSplash();
       this.splashScreen.hide();
     });
   }
@@ -34,7 +34,8 @@ export class AppComponent {
     await this.modalController.create({
       component: SplashPage,
       cssClass: 'custom-splash-page',
-      // leaveAnimation: this.animation.beforeStyles({ 'opacity': 1 }).fromTo('opacity', 1, 0) https://www.joshmorony.com/create-a-custom-modal-page-transition-animation-in-ionic/
+      // leaveAnimation: this.animation.beforeStyles({ 'opacity': 1 }).fromTo('opacity', 1, 0)
+      // https://www.joshmorony.com/create-a-custom-modal-page-transition-animation-in-ionic/
     }).then(res => {
       res.present().then(() => {
         this.splashScreen.hide();
