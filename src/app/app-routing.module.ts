@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes, Router } from '@angular/router';
-
 import { AuthenticationService } from './services/authentication.service';
+import { ModalController } from '@ionic/angular';
 
 const routes: Routes = [
   {
@@ -25,6 +25,10 @@ const routes: Routes = [
   {
     path: 'location-detail',
     loadChildren: () => import('./tab2/location-detail/location-detail.module').then( m => m.LocationDetailPageModule)
+  },
+  {
+    path: 'splash',
+    loadChildren: () => import('./splash/splash.module').then( m => m.SplashPageModule)
   }
 ];
 @NgModule({
@@ -38,14 +42,20 @@ export class AppRoutingModule {
 
   userProfile: any = null;
 
-  constructor(private authService: AuthenticationService, private router: Router) {
+  constructor(
+    private authService: AuthenticationService,
+    private router: Router,
+    private modalController: ModalController
+  ) {
     this.authService.observe((user: firebase.User) => {
       if (this.router.url.indexOf('/tabs/') < 0) {
-        this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true });
+        this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true })
+          .then(res => { this.modalController.dismiss(); });
       }
      }, () => {
       if (this.router.url !== '/') {
-        this.router.navigate(['/']);
+        this.router.navigate(['/'])
+          .then(res => { this.modalController.dismiss(); });
       }
     });
   }

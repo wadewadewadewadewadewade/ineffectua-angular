@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -21,6 +20,7 @@ import { NewAppointmentPageModule } from './tab1/new-appointment/new-appointment
 // Painlog
 import { AngularDraggableModule } from 'angular2-draggable';
 import { LocationDetailPageModule } from './tab2/location-detail/location-detail.module';
+import { SplashPageModule } from './splash/splash.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -32,13 +32,13 @@ import { LocationDetailPageModule } from './tab2/location-detail/location-detail
     AppRoutingModule,
     NewAppointmentPageModule,
     LocationDetailPageModule,
+    SplashPageModule,
     AngularDraggableModule,
     AngularFireAuthModule,
     AngularFireDatabaseModule,
   ],
   providers: [
     StatusBar,
-    SplashScreen,
     AuthenticationService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
