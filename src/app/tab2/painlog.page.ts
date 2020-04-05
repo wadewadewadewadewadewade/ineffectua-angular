@@ -71,6 +71,18 @@ export class PainLogPage implements OnInit {
     });
   }
 
+  getDir(val: string) {
+    if (parseFloat(val) > 65) {
+      return 'rtl';
+    } else {
+      return 'ltr';
+    }
+  }
+
+  getFlip(val: string) {
+    return parseFloat(val) > 65;
+  }
+
   stoppedDragging(mark: HTMLElement, location: Location) {
     const match = mark.style.transform.match(/([0-9\.-]+)px,\s*([0-9\.-]+)px/);
     if (match && match.length > 1) {

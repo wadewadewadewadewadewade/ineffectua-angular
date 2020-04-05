@@ -1,13 +1,16 @@
-ion-content ion-toolbar {
-  --background: translucent;
+ion-content {
+  display:flex;
 }
 .figure { 
-  width:calc((100vh - 112px) * 0.417);
-  height:calc(100vh - 112px);
-  margin:0 auto;
+  width:calc((100vh - 112px) * 0.575);
+  margin:auto;
+  --offset-top: auto;
+  --offset-bottom: auto;
   position: relative;
+  display:flex;
   svg {
-    display:block;
+    margin:auto;
+    display:flex;
     width:100%;
     max-height:100%;
     z-index:1;
@@ -15,6 +18,7 @@ ion-content ion-toolbar {
   .mark {
     position: absolute;
     width:0;
+    margin-left:-1em;
     padding:1em 0 0 7em;
     margin-top:-50px;
     overflow:visible;
@@ -24,6 +28,21 @@ ion-content ion-toolbar {
     -moz-user-select: auto !important;
     -ms-user-select: auto !important;
     user-select: auto !important;
+    &.flip {
+      ion-item {
+        margin-left:0;
+        margin-right:6em;
+        ion-input {
+          --padding-start: 1em;
+        }
+        ion-button {
+          &:last-child {
+            margin-right:0;
+            margin-left:-1.5em;
+          }
+        }
+      }
+    }
     * {
       -webkit-user-select: auto !important;
       -khtml-user-select: auto !important;
@@ -37,7 +56,6 @@ ion-content ion-toolbar {
       top:50%;
       left:-1em;
       fill:red;
-
     }
     ion-item {
       width: 7em;

@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { UniversalInterceptor } from './universal-interceptor';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
@@ -14,6 +15,7 @@ import { AuthenticationService } from './services/authentication.service';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { AngularFireAnalyticsModule, ScreenTrackingService, UserTrackingService } from '@angular/fire/analytics';
 
 // Appointments
 import { NewAppointmentPageModule } from './tab1/new-appointment/new-appointment.module';
@@ -39,12 +41,16 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
     AngularDraggableModule,
     AngularFireAuthModule,
     AngularFireDatabaseModule,
+    AngularFireAnalyticsModule
   ],
   providers: [
     StatusBar,
     SplashScreen,
     AuthenticationService,
+    ScreenTrackingService,
+    UserTrackingService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: HTTP_INTERCEPTORS, useClass: UniversalInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })
