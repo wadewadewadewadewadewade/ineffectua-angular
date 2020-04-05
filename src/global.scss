@@ -24,3 +24,10 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+.custom-splash-page {
+  --width: 100% !important;
+  --height: 100% !important;
+  top: 0;
+  left: 0;
+}

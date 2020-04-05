@@ -38,7 +38,10 @@
 
     <ion-item>
       <ion-label position="floating" color="secondary">Severity</ion-label>
-      <ion-input type="number" step="1" min="0" max="10" formControlName="severity" class="form-controll"></ion-input>
+      <ion-range step="1" min="0" max="10" formControlName="severity" class="form-controll">
+        <ion-icon size="small" slot="start" name="happy-outline"></ion-icon>
+        <ion-icon slot="end" name="sad-outline"></ion-icon>
+      </ion-range>
     </ion-item>
 
     <ion-item>

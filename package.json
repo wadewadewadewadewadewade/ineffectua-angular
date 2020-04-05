@@ -38,6 +38,7 @@
     "@ionic/angular-server": "^5.1.0-dev.202003272115.6f84a4f",
     "@nguniversal/express-engine": "^9.1.0",
     "@ngx-pwa/local-storage": "^9.0.3",
+    "@webcomponents/custom-elements": "^1.4.1",
     "angular2-draggable": "^2.3.2",
     "cordova-plugin-googleplus": "^8.4.0",
     "core-js": "^2.5.4",

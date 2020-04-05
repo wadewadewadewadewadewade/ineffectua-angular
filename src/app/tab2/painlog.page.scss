@@ -15,7 +15,7 @@ ion-content ion-toolbar {
   .mark {
     position: absolute;
     width:0;
-    padding:1vh 0 0 8em;
+    padding:1em 0 0 7em;
     margin-top:-50px;
     overflow:visible;
     z-index:2;
@@ -33,16 +33,16 @@ ion-content ion-toolbar {
     }
     svg {
       position: absolute;
-      width:5vh;
+      width:5em;
       top:50%;
-      left:0;
+      left:-1em;
       fill:red;
 
     }
     ion-item {
       width: 7em;
-      margin-left:-7em;
-      margin-top:-1vh;
+      margin-left:-6em;
+      margin-top:-1em;
       border-bottom:solid 1px red;
       ion-input {
         width: 50em;
@@ -53,11 +53,13 @@ ion-content ion-toolbar {
         width:4em;
       }
       ion-button {
-        width:5vh;
+        width:2em;
+        --padding-start: 0;
+        --padding-end: 0;
         color:red;
         margin:15px 0 0;
         &:last-child {
-          margin-right:-3vh;
+          margin-right:-1.5em;
         }
       }
     }

@@ -21,10 +21,14 @@ import { NewAppointmentPageModule } from './tab1/new-appointment/new-appointment
 import { AngularDraggableModule } from 'angular2-draggable';
 import { LocationDetailPageModule } from './tab2/location-detail/location-detail.module';
 import { SplashPageModule } from './splash/splash.module';
+import { SplashPage } from './splash/splash.page';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 
 @NgModule({
   declarations: [AppComponent],
-  entryComponents: [],
+  entryComponents: [
+    SplashPage,
+  ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -32,13 +36,13 @@ import { SplashPageModule } from './splash/splash.module';
     AppRoutingModule,
     NewAppointmentPageModule,
     LocationDetailPageModule,
-    SplashPageModule,
     AngularDraggableModule,
     AngularFireAuthModule,
     AngularFireDatabaseModule,
   ],
   providers: [
     StatusBar,
+    SplashScreen,
     AuthenticationService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
