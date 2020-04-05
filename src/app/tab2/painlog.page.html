@@ -34,4 +34,20 @@
 
   </div>
 
+  <ion-list>
+    <ion-item>
+      <ion-label color="primary">Range</ion-label>
+      <ion-range snaps="true" ticks="true" steps="1" min="0" max="3" [(value)]="range" (ionChange)="updateDate($event, false)">
+        <ion-label slot="start">1d</ion-label>
+        <ion-label slot="end">all</ion-label>
+      </ion-range>
+    </ion-item>
+    <ion-item>
+      <ion-label color="primary">Date</ion-label>
+      <ion-range min="0" max="1" [(value)]="centered" (ionChange)="updateDate($event, true)">
+        <ion-label slot="start">oldest</ion-label>
+        <ion-label slot="end">newest</ion-label>
+      </ion-range>
+    </ion-item>
+  </ion-list>
 </ion-content>

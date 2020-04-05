@@ -8,6 +8,7 @@ import { AlertController } from '@ionic/angular';
 // location detail
 import { ModalController } from '@ionic/angular';
 import { LocationDetailPage } from './location-detail/location-detail.page';
+import { Event } from '@angular/router';
 
 export interface Location {
   'key': string;
@@ -28,8 +29,12 @@ export interface Location {
 export class PainLogPage implements OnInit {
 
   public locations = new Observable<Location[]>();
+  public range = 3;
+  public centered = 1;
   private addedDate = '1970-01-01T00:00:00-07:00';
-  private removedDate = this.getNowDateIsoString();
+  private removedDate = this.getDateIsoString();
+  private oldest: Date;
+  private newest: Date;
 
   @ViewChild('body') body: ElementRef;
 
@@ -44,6 +49,40 @@ export class PainLogPage implements OnInit {
     this.getLocationsList();
   }
 
+  updateDate($event: Event, IsDate:boolean) {
+    const centeredDateInMilliseconds = ((this.newest.getTime() - this.oldest.getTime()) * this.centered) / 2 + this.oldest.getTime();
+    switch (this.range) {
+      case 3: // all dates
+        this.addedDate = '1970-01-01T00:00:00-07:00';
+        this.removedDate = this.getDateIsoString();
+        break;
+      case 2: // 1 year
+        this.addedDate = this.getDateIsoString(centeredDateInMilliseconds - 1.577e+10); // minus 6 months
+        this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 1.577e+10); // plus six months
+        break;
+      case 1: // 1 week
+        this.addedDate = this.getDateIsoString(centeredDateInMilliseconds - 3.024e+8); // minus 3.5 days
+        this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 3.024e+8); // plus 3.5 days
+        break;
+      case 0: // 1 day
+        this.addedDate = this.getDateIsoString(centeredDateInMilliseconds - 4.32e+7); // minus 0.5 days
+        this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 4.32e+7); // plus 0.5 days
+        break;
+    }
+    this.getLocationsList();
+  }
+
+  /* Used by getLocationsList to get the oldest and newset log entry */
+  checkDate(val: Date) {
+    if (!this.oldest || val < this.oldest) {
+      this.oldest = val;
+    }
+    if (!this.newest || val > this.newest) {
+      this.newest = val;
+    }
+  }
+
+  /* Dig up and serialize into Location objects log entries */
   getLocationsList() {
     const added = new Date(this.addedDate),
       removed = new Date(this.removedDate);
@@ -60,6 +99,8 @@ export class PainLogPage implements OnInit {
             const locationAdded = new Date(loc.added),
               locationRemoved = new Date(loc.removed)
             let ret = true;
+            this.checkDate(locationAdded);
+            this.checkDate(locationRemoved);
             if (!loc.added || locationAdded < added) {
               ret = false;
             }
@@ -71,6 +112,7 @@ export class PainLogPage implements OnInit {
     });
   }
 
+  /* Used to swap the display of th elog entry when it gets too close to the right edge of the screen, so it's buttons are still usable */
   getDir(val: string) {
     if (parseFloat(val) > 65) {
       return 'rtl';
@@ -79,10 +121,12 @@ export class PainLogPage implements OnInit {
     }
   }
 
+  /* Used to swap the display of th elog entry when it gets too close to the right edge of the screen, so it's buttons are still usable */
   getFlip(val: string) {
     return parseFloat(val) > 65;
   }
 
+  /* Event that fires when dragging ends, so we can write the new location back into the DB and prep for further dragging */
   stoppedDragging(mark: HTMLElement, location: Location) {
     const match = mark.style.transform.match(/([0-9\.-]+)px,\s*([0-9\.-]+)px/);
     if (match && match.length > 1) {
@@ -93,8 +137,9 @@ export class PainLogPage implements OnInit {
     }
   }
 
-  getNowDateIsoString() {
-    const d = new Date(),
+  /* Tool to get ISO string format for dates and datetimes */
+  getDateIsoString(val?: string | number) {
+    const d = val ? new Date(val) : new Date(),
       tzo = -d.getTimezoneOffset(),
       dif = tzo >= 0 ? '+' : '-',
       pad = (num: number) => {
@@ -111,6 +156,7 @@ export class PainLogPage implements OnInit {
       ':' + pad(tzo % 60);
   }
 
+  /* initialize a Location object (I suppose I should make Location a class with a constructor...) */
   getLocation(x: string = null, y: string = null): Location {
     return {
       key: null,
@@ -118,16 +164,18 @@ export class PainLogPage implements OnInit {
       y,
       severity: 0,
       label: '',
-      added: this.getNowDateIsoString(),
+      added: this.getDateIsoString(),
       removed: null,
       description: null
     };
   }
 
+  /* Rounding tool to get percent from px value */
   numberPairToPercent(px: number, dimension: number) {
     return Math.round(((px / dimension)  + Number.EPSILON) * 10000) / 100;
   }
 
+  /* used when creating new log entries, by clicking on the figure */
   getCordinatesMouse($event: MouseEvent, markMatch: Array<any>): Location {
     const target = $event.target as HTMLElement,
       isMark = markMatch && markMatch.length > 1,
@@ -139,6 +187,7 @@ export class PainLogPage implements OnInit {
     return loc;
   }
 
+  /* used when creating new log entries, by tapping on the figure */
   getCordinatesTouch($event: TouchEvent, markMatch: Array<any>): Location {
     const target = $event.target as HTMLElement,
       isMark = markMatch && markMatch.length > 1,
@@ -150,14 +199,17 @@ export class PainLogPage implements OnInit {
     return loc;
   }
 
+  /* used to siplify the event handler reference in the html file */
   addLocationMouse($event: MouseEvent) {
     this.addLocation(this.getCordinatesMouse($event, null));
   }
 
+  /* used to siplify the event handler reference in the html file */
   addLocationTouch($event: TouchEvent) {
     this.addLocation(this.getCordinatesTouch($event, null));
   }
 
+  /* General toold for inserting new or updating existing log entrties */
   addLocation(loc: Location) {
     const user = this.auth.user;
     if (user) {
@@ -171,6 +223,7 @@ export class PainLogPage implements OnInit {
     }
   }
 
+  /* launch the deail modal */
   async infoLocation(loc: Location) {
     const modal = await this.modalController.create({
       component: LocationDetailPage,
@@ -197,7 +250,7 @@ export class PainLogPage implements OnInit {
             const user = this.auth.user;
             if (user) {
               if (loc.key) {
-                loc.removed = this.getNowDateIsoString();
+                loc.removed = this.getDateIsoString();
                 this.addLocation(loc);
               }
             }
