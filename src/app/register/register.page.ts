@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { AuthenticationService, Credentials } from '../services/authentication.service';
 import { Router } from '@angular/router';
+import { AngularFireDatabase } from '@angular/fire/database';
 
 @Component({
   selector: 'app-register',
@@ -26,6 +27,7 @@ export class RegisterPage implements OnInit {
  };
 
   constructor(
+    private db: AngularFireDatabase,
     private router: Router,
     private authService: AuthenticationService,
     private formBuilder: FormBuilder
@@ -44,10 +46,19 @@ export class RegisterPage implements OnInit {
     });
   }
 
+  saveUserAccountInformation(res: firebase.User) {
+    if (res) {
+      res.providerData.forEach(profile => {
+        this.db.object<firebase.UserInfo>('/users/' + res.uid + '/account').set(profile);
+      });
+    }
+  }
+
   tryRegister(value: Credentials) {
     this.authService.registerUser(value)
      .then(res => {
-       //console.log(res);
+       // console.log(res);
+       this.saveUserAccountInformation(res);
        this.errorMessage = '';
        this.successMessage = 'Your account has been created.';
        this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true });

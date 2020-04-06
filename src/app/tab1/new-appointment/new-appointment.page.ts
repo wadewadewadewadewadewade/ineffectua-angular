@@ -40,7 +40,9 @@ export class NewAppointmentPage implements OnInit {
     this.validationsForm = this.formBuilder.group({
       datetime: new FormControl('', Validators.compose([
         Validators.required,
-        Validators.pattern('([0-2][0-9]{3})\-([0-1][0-9])\-([0-3][0-9])T([0-5][0-9])\:([0-5][0-9])\:([0-5][0-9](\.[0-9]{3})?)(Z|([\-\+]([0-1][0-9])\:00))')
+        Validators.pattern(
+          '([0-2][0-9]{3})\-([0-1][0-9])\-([0-3][0-9])T([0-5][0-9])\:([0-5][0-9])\:([0-5][0-9](\.[0-9]{3})?)(Z|([\-\+]([0-1][0-9])\:00))'
+        )
       ])),
       title: new FormControl('', Validators.compose([
         Validators.minLength(5),
@@ -77,7 +79,7 @@ export class NewAppointmentPage implements OnInit {
 
   dismiss() {
     this.modalController.dismiss({
-      'dismissed': true
+      dismissed: true
     });
   }
 

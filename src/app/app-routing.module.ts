@@ -60,15 +60,4 @@ export class AppRoutingModule {
     });
   }
 
-  logout() {
-    this.authService.logoutUser()
-    .then(res => {
-      console.log(res);
-      this.router.navigate(['/']);
-    })
-    .catch(error => {
-      console.log(error);
-    });
-  }
-
 }
