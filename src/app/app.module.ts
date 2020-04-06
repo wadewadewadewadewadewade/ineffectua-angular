@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { UniversalInterceptor } from './universal-interceptor';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
@@ -22,7 +20,7 @@ import { NewAppointmentPageModule } from './tab1/new-appointment/new-appointment
 // Painlog
 import { AngularDraggableModule } from 'angular2-draggable';
 import { LocationDetailPageModule } from './tab2/location-detail/location-detail.module';
-import { SplashPageModule } from './splash/splash.module';
+// import { SplashPageModule } from './splash/splash.module';
 import { SplashPage } from './splash/splash.page';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 
@@ -49,8 +47,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
     AuthenticationService,
     ScreenTrackingService,
     UserTrackingService,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    { provide: HTTP_INTERCEPTORS, useClass: UniversalInterceptor, multi: true }
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
 })

@@ -6,6 +6,7 @@
 .tmp
 *.tmp
 *.tmp.*
+*.cache
 *.sublime-project
 *.sublime-workspace
 .DS_Store

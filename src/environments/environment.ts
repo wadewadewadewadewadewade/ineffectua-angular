@@ -10,9 +10,9 @@ export const environment = {
     databaseURL: 'https://ineffectua.firebaseio.com',
     projectId: 'ineffectua',
     storageBucket: 'ineffectua.appspot.com',
-    messagingSenderId: '446XXXXXX105',
-    appId: '1:616783557128:android:c473fc0abeb11b16',
-    measurementId: '4969536'
+    messagingSenderId: '616783557128',
+    appId: '1:616783557128:web:790bfc9bd4d2bcf799d7bd',
+    measurementId: 'G-4GDLGDC35F'
   }
 };
 
