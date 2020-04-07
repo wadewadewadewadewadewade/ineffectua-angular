@@ -15,7 +15,8 @@ import { AngularFireModule } from '@angular/fire';
 
 describe('AppComponent', () => {
 
-  let statusBarSpy, splashScreenSpy, platformReadySpy, platformSpy;
+  let platformReadySpy;
+  const statusBarSpy = {styleDefault: () => { }}, splashScreenSpy = {hide: () => { }}, platformSpy = {ready: () => { }};
   const DatabaseStub = {
     list: (name: string) => ({
       valueChanges: () => new BehaviorSubject({ foo: 'bar' }),
@@ -43,7 +44,7 @@ describe('AppComponent', () => {
 
     }
   }
-  class authenticationSpy extends AuthenticationService {
+  class AuthenticationSpy extends AuthenticationService {
     isLoggedIn(): Promise<firebase.User> {
       return new Promise((resolve, _reject) => resolve());
     }
@@ -71,7 +72,7 @@ describe('AppComponent', () => {
         AngularFireModule.initializeApp(environment.firebase),
         { provide: AngularFireDatabaseModule, useValue: DatabaseStub },
         { provide: AngularFireAuthModule, useValue: AuthStub },
-        { provide: AuthenticationService, useClass: authenticationSpy },
+        { provide: AuthenticationService, useClass: AuthenticationSpy },
         { provide: StatusBar, useValue: statusBarSpy },
         { provide: SplashScreen, useValue: splashScreenSpy },
         { provide: Platform, useValue: platformSpy },

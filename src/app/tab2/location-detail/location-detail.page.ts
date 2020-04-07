@@ -88,7 +88,7 @@ export class LocationDetailPage implements OnInit {
 
   dismiss() {
     this.modalController.dismiss({
-      'dismissed': true
+      dismissed: true
     });
   }
 

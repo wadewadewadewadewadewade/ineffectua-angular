@@ -158,8 +158,20 @@ export class PainLogPage implements OnInit {
   stoppedDragging(mark: HTMLElement, location: Location) {
     const match = mark.style.transform.match(/([0-9\.-]+)px,\s*([0-9\.-]+)px/);
     if (match && match.length > 1) {
-      location.x = this.numberPairToPercent((((parseFloat(location.x) / 100) * (this.body.nativeElement as HTMLElement).offsetWidth) + parseFloat(match[1])), (this.body.nativeElement as HTMLElement).offsetWidth) + '%';
-      location.y = this.numberPairToPercent((((parseFloat(location.y) / 100) * (this.body.nativeElement as HTMLElement).offsetHeight) + parseFloat(match[2])), (this.body.nativeElement as HTMLElement).offsetHeight) + '%';
+      location.x = this.numberPairToPercent(
+        (
+          (
+            (parseFloat(location.x) / 100)* (this.body.nativeElement as HTMLElement).offsetWidth
+          ) + parseFloat(match[1])
+        ), (this.body.nativeElement as HTMLElement).offsetWidth
+      ) + '%';
+      location.y = this.numberPairToPercent(
+        (
+          (
+            (parseFloat(location.y) / 100) * (this.body.nativeElement as HTMLElement).offsetHeight
+          ) + parseFloat(match[2])
+        ), (this.body.nativeElement as HTMLElement).offsetHeight
+      ) + '%';
       mark.style.transform = '';
       this.addLocation(location);
     }
