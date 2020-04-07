@@ -3,6 +3,7 @@
     "ineffectua": {
       "hosting": {
         "public": "dist/app-server",
+        "main": "main.js",
         "app": [
           "ineffectua"
         ],

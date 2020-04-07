@@ -1,6 +1,7 @@
 {
   "hosting": {
     "public": "dist/app-server",
+    "main": "main.js",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -15,6 +16,9 @@
   },
   "functions": {
     "source": "dist",
-    "predeploy": "npm --prefix \"$RESOURCE_DIR\" run build:ssr"
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint",
+      "npm --prefix \"$RESOURCE_DIR\" run build"
+    ]
   }
 }

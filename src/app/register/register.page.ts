@@ -62,7 +62,7 @@ export class RegisterPage implements OnInit {
        this.saveUserAccountInformation(res.user);
        this.errorMessage = '';
        this.successMessage = 'Your account has been created.';
-       //this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true });
+       this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true });
      }, err => {
        // console.log(err);
        this.errorMessage = err.message;

@@ -53,7 +53,7 @@ function run() {
   }));*/
   const originsWhitelist = [
     'http://localhost:4200', // this is my front-end url for development
-     'http://ineffectua.com'
+     'https://ineffectua.web.app'
   ];
   const corsOptions = {
     origin: (origin: string, callback: any) => {

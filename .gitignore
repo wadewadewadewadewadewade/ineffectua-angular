@@ -29,11 +29,7 @@ src/app/tab1/credentials.json
 /.vscode
 /coverage
 /dist
-!/dist/package.json
-!/dist/cp-angular.js
-/functions/dist/app-server
-/functions/dist/out-tsc
-!/functions/dist/cp-angular.js
+/functions/dist
 /node_modules
 /platforms
 /plugins
