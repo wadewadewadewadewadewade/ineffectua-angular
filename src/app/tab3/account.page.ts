@@ -1,4 +1,4 @@
-import { map } from 'rxjs/operators';
+import { map, reduce } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthenticationService } from './../services/authentication.service';
 import { AngularFireDatabase } from '@angular/fire/database';
@@ -13,7 +13,7 @@ import { Title } from '@angular/platform-browser';
 })
 export class AccountPage implements OnInit {
 
-  properties: firebase.UserInfo;
+  properties =  [];
 
   constructor(
     private title: Title,
@@ -27,18 +27,17 @@ export class AccountPage implements OnInit {
   ngOnInit() {
     this.auth.observe((user: firebase.User) => {
       this.db
-        .list<firebase.UserInfo>('/users/' + user.uid + '/account')
-        .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
-          return p.payload.val() as firebase.UserInfo;
-        })))
-        .subscribe((info: firebase.UserInfo[]) => {
-          this.properties = info[0];
+        .list('/users/' + user.uid + '/account')
+        .snapshotChanges().pipe(
+          map((mutation: any[]) => mutation.map(p => {
+            const key = p.key, value = p.payload.val();
+            return { key, value };
+          }))
+        )
+        .subscribe((info: Array<any>) => {
+          this.properties = info.filter((val: any) => { return val.key !== 'uid' && val.key !== 'providerId'; });
       });
     });
-  }
-
-  propertyKeys() {
-    return Object.keys(this.properties);
   }
 
   logout() {

@@ -50,12 +50,12 @@ export class AppRoutingModule {
     this.authService.observe((user: firebase.User) => {
       if (this.router.url.indexOf('/tabs/') < 0) {
         this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true })
-          .then(res => { this.modalController.dismiss(); });
+          .then(res => { /* this.modalController.dismiss(); */ });
       }
      }, () => {
       if (this.router.url !== '/') {
         this.router.navigate(['/'])
-          .then(res => { this.modalController.dismiss(); });
+          .then(res => { /* this.modalController.dismiss(); */ });
       }
     });
   }

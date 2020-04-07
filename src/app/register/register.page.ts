@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
 import { AuthenticationService, Credentials } from '../services/authentication.service';
 import { Router } from '@angular/router';
 import { AngularFireDatabase } from '@angular/fire/database';
+import { __classPrivateFieldGet } from 'tslib';
 
 @Component({
   selector: 'app-register',
@@ -58,12 +59,12 @@ export class RegisterPage implements OnInit {
     this.authService.registerUser(value)
      .then(res => {
        // console.log(res);
-       this.saveUserAccountInformation(res);
+       this.saveUserAccountInformation(res.user);
        this.errorMessage = '';
        this.successMessage = 'Your account has been created.';
-       this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true });
+       //this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true });
      }, err => {
-       console.log(err);
+       // console.log(err);
        this.errorMessage = err.message;
        this.successMessage = '';
      });
