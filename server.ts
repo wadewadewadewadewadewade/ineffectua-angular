@@ -64,10 +64,12 @@ function run() {
   };
   server.use(cors(corsOptions));
 
-  // deploy to Firebase Cloud Functions - https://fireship.io/lessons/angular-universal-firebase/
-  server.listen(port, () => {
-    console.log(`Node Express server listening on http://localhost:${port}`);
-  });
+  // Don't listen when deploying to Firebase Cloud Functions - https://fireship.io/lessons/angular-universal-firebase/
+  /*if (!process.argv.includes('firebase')) {
+    server.listen(port, () => {
+      console.log(`Node Express server listening on http://localhost:${port}`);
+    });
+  }*/
 }
 
 // Webpack will replace 'require' with '__webpack_require__'

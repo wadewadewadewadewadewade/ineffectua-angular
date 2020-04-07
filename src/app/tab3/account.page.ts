@@ -4,6 +4,7 @@ import { AuthenticationService } from './../services/authentication.service';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-account',
@@ -14,7 +15,14 @@ export class AccountPage implements OnInit {
 
   properties: firebase.UserInfo;
 
-  constructor(private router: Router, private db: AngularFireDatabase, private auth: AuthenticationService) {}
+  constructor(
+    private title: Title,
+    private router: Router,
+    private db: AngularFireDatabase,
+    private auth: AuthenticationService
+  ) {
+    this.title.setTitle('account');
+  }
 
   ngOnInit() {
     this.auth.observe((user: firebase.User) => {

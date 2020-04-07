@@ -13,16 +13,22 @@
   "engines": {
     "node": "12"
   },
-  "main": "app-server/main.js",
+  "rewrites": [
+    {
+      "source": "**",
+      "function": "ssr"
+    }
+  ],
+  "main": "main.js",
   "dependencies": {
-    "firebase-admin": "^8.10.0",
+    "firebase-admin": "^8.9.0",
     "firebase-functions": "^3.3.0",
-    "fs-extra": "^9.0.0",
-    "typescript": "^3.8.3"
+    "fs-extra": "^9.0.0"
   },
   "devDependencies": {
-    "firebase-functions-test": "^0.1.6",
-    "parse5": "^5.1.1"
+    "tslint": "^5.12.0",
+    "typescript": "^3.8.3",
+    "firebase-functions-test": "^0.1.6"
   },
   "private": true
 }

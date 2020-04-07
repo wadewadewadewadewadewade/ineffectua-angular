@@ -2,8 +2,15 @@
   "targets": {
     "ineffectua": {
       "hosting": {
+        "public": "dist/app-server",
         "app": [
           "ineffectua"
+        ],
+        "rewrites": [
+          {
+            "source": "**",
+            "function": "ssr"
+          }
         ]
       }
     }
