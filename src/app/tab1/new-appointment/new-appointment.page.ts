@@ -5,6 +5,7 @@ import { AngularFireDatabase } from '@angular/fire/database';
 import { AuthenticationService } from '../../services/authentication.service';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { ModalController, NavParams, AlertController } from '@ionic/angular';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-new-appointment',
@@ -29,12 +30,16 @@ export class NewAppointmentPage implements OnInit {
   key: string;
 
   constructor(
+    private title: Title,
     private db: AngularFireDatabase,
     private auth: AuthenticationService,
     private formBuilder: FormBuilder,
     public modalController: ModalController,
     public navParams: NavParams,
-    public alertController: AlertController) {}
+    public alertController: AlertController
+  ) {
+
+  }
 
   ngOnInit() {
     this.validationsForm = this.formBuilder.group({
@@ -54,6 +59,7 @@ export class NewAppointmentPage implements OnInit {
     });
     this.key = this.navParams.get('key');
     if (this.key) {
+      this.title.setTitle('Edit Appointment');
       this.auth.observe((user: firebase.User) => {
         this.db.list('/users/' + user.uid + '/appointments', ref => ref.orderByKey().equalTo(this.key))
         .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
@@ -70,6 +76,8 @@ export class NewAppointmentPage implements OnInit {
             this.validationsForm.controls.description.setValue(appt[0].description);
         });
       });
+    } else {
+      this.title.setTitle('New Appointment');
     }
   }
 

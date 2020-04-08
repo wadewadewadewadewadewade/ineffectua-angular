@@ -4,6 +4,10 @@ import { AuthenticationService, Credentials } from '../services/authentication.s
 import { Router } from '@angular/router';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { __classPrivateFieldGet } from 'tslib';
+import { TransferState, makeStateKey, Title } from '@angular/platform-browser';
+
+// make state key in state to store users
+const STATE_KEY_USER = makeStateKey('user');
 
 @Component({
   selector: 'app-register',
@@ -28,11 +32,15 @@ export class RegisterPage implements OnInit {
  };
 
   constructor(
+    private title: Title,
     private db: AngularFireDatabase,
     private router: Router,
     private authService: AuthenticationService,
-    private formBuilder: FormBuilder
-  ) {}
+    private formBuilder: FormBuilder,
+    private state: TransferState
+  ) {
+    this.title.setTitle('register');
+  }
 
   ngOnInit() {
     this.validationsForm = this.formBuilder.group({
@@ -59,6 +67,7 @@ export class RegisterPage implements OnInit {
     this.authService.registerUser(value)
      .then(res => {
        // console.log(res);
+       this.state.set(STATE_KEY_USER, res.user as firebase.User);
        this.saveUserAccountInformation(res.user);
        this.errorMessage = '';
        this.successMessage = 'Your account has been created.';

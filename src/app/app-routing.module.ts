@@ -2,6 +2,10 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes, Router } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
 import { ModalController } from '@ionic/angular';
+import { TransferState, makeStateKey } from '@angular/platform-browser';
+
+// make state key in state to store users
+const STATE_KEY_USER = makeStateKey('user');
 
 const routes: Routes = [
   {
@@ -40,13 +44,19 @@ const routes: Routes = [
 })
 export class AppRoutingModule {
 
-  userProfile: any = null;
+  user: firebase.User = null;
 
   constructor(
     private authService: AuthenticationService,
     private router: Router,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private state: TransferState
   ) {
+    this.user = this.state.get(STATE_KEY_USER, null);
+    if (!this.user) {
+      this.router.navigate(['/'])
+        .then(res => { /* this.modalController.dismiss(); */ });
+    }
     this.authService.observe((user: firebase.User) => {
       if (this.router.url.indexOf('/tabs/') < 0) {
         this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true })

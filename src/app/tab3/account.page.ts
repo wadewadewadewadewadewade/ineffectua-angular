@@ -4,7 +4,10 @@ import { AuthenticationService } from './../services/authentication.service';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Title } from '@angular/platform-browser';
+import { Title, TransferState, makeStateKey } from '@angular/platform-browser';
+
+// make state key in state to store users
+const STATE_KEY_USER = makeStateKey('user');
 
 @Component({
   selector: 'app-account',
@@ -19,7 +22,8 @@ export class AccountPage implements OnInit {
     private title: Title,
     private router: Router,
     private db: AngularFireDatabase,
-    private auth: AuthenticationService
+    private auth: AuthenticationService,
+    private state: TransferState
   ) {
     this.title.setTitle('account');
   }
@@ -44,6 +48,7 @@ export class AccountPage implements OnInit {
     this.auth.logoutUser()
     .then(res => {
       console.log(res);
+      this.state.remove(STATE_KEY_USER)
       this.router.navigate(['/']);
     })
     .catch(error => {

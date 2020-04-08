@@ -1,3 +1,4 @@
+import { Title } from '@angular/platform-browser';
 import { map } from 'rxjs/operators';
 import { Location } from '../painlog.page';
 import { Component, OnInit } from '@angular/core';
@@ -33,12 +34,17 @@ export class LocationDetailPage implements OnInit {
   removedPicker = '';
   location: Location;
 
-  constructor(private db: AngularFireDatabase,
+  constructor(
+    private title: Title,
+    private db: AngularFireDatabase,
     private auth: AuthenticationService,
     private formBuilder: FormBuilder,
     public modalController: ModalController,
     public navParams: NavParams,
-    public alertController: AlertController) { }
+    public alertController: AlertController
+    ) {
+
+    }
 
   ngOnInit() {
     this.validationsForm = this.formBuilder.group({
@@ -56,6 +62,7 @@ export class LocationDetailPage implements OnInit {
     });
     this.location = this.navParams.get('location');
     if (this.location) {
+      this.title.setTitle('Edit Log Detail');
       this.auth.observe((user: firebase.User) => {
         this.db
           .list<Location>('/users/' + this.auth.user.uid + '/painlog',
@@ -75,6 +82,8 @@ export class LocationDetailPage implements OnInit {
             this.validationsForm.controls.description.setValue(loc[0].description);
         });
       })
+    } else {
+      this.title.setTitle('New Log Detail');
     }
   }
 

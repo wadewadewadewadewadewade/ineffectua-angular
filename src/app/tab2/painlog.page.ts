@@ -11,6 +11,7 @@ import { LocationDetailPage } from './location-detail/location-detail.page';
 import { Event } from '@angular/router';
 import { RangeChangeEventDetail, RangeValue } from '@ionic/core';
 import { isDate } from 'util';
+import { Title } from '@angular/platform-browser';
 
 export interface Location {
   'key': string;
@@ -43,11 +44,14 @@ export class PainLogPage implements OnInit {
   @ViewChild('body') body: ElementRef;
 
   constructor(
+    private title: Title,
     private db: AngularFireDatabase,
     public alertController: AlertController,
     private auth: AuthenticationService,
     public modalController: ModalController
-    ) {}
+    ) {
+      this.title.setTitle('Pain Log');
+    }
 
   ngOnInit() {
     this.getLocationsList();

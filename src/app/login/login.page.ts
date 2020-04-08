@@ -1,7 +1,11 @@
+import { TransferState, makeStateKey, Title } from '@angular/platform-browser';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthenticationService, Credentials } from '../services/authentication.service';
+
+// make state key in state to store users
+const STATE_KEY_USER = makeStateKey('user');
 
 @Component({
   selector: 'app-login',
@@ -24,12 +28,14 @@ export class LoginPage implements OnInit {
   };
 
   constructor(
-
+    private title: Title,
     private router: Router,
     private authService: AuthenticationService,
-    private formBuilder: FormBuilder
-
-  ) { }
+    private formBuilder: FormBuilder,
+    private state: TransferState
+  ) {
+    this.title.setTitle('login');
+  }
 
   ngOnInit() {
     this.validationsForm = this.formBuilder.group({
@@ -48,6 +54,7 @@ export class LoginPage implements OnInit {
     this.authService.loginUser(value)
     .then(res => {
       // console.log(res);
+      this.state.set(STATE_KEY_USER, res.user as firebase.User);
       this.errorMessage = '';
       this.router.navigate([this.authService.authenticatedUrl], { replaceUrl: true });
     }, err => {

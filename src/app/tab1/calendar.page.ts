@@ -1,3 +1,4 @@
+import { Title } from '@angular/platform-browser';
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../services/authentication.service';
 
@@ -29,7 +30,14 @@ export class CalendarPage implements OnInit {
   public appointments = new Observable<Appointment[]>();
   public showOnlyUpcoming = true;
 
-  constructor(private db: AngularFireDatabase, private auth: AuthenticationService, public modalController: ModalController) {}
+  constructor(
+    private title: Title,
+    private db: AngularFireDatabase,
+    private auth: AuthenticationService,
+    public modalController: ModalController
+  ) {
+    this.title.setTitle('Appointments');
+  }
 
   ngOnInit() {
     this.getAppointmentList();
