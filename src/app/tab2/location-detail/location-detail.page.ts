@@ -1,9 +1,6 @@
 import { Title } from '@angular/platform-browser';
-import { map } from 'rxjs/operators';
-import { Location } from '../painlog.page';
 import { Component, OnInit } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
-import { AuthenticationService } from '../../services/authentication.service';
+import { FirebaseDataService, Location } from '../../services/firebasedata.service';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { ModalController, NavParams, AlertController } from '@ionic/angular';
 
@@ -36,8 +33,7 @@ export class LocationDetailPage implements OnInit {
 
   constructor(
     private title: Title,
-    private db: AngularFireDatabase,
-    private auth: AuthenticationService,
+    public db: FirebaseDataService,
     private formBuilder: FormBuilder,
     public modalController: ModalController,
     public navParams: NavParams,
@@ -63,25 +59,17 @@ export class LocationDetailPage implements OnInit {
     this.location = this.navParams.get('location');
     if (this.location) {
       this.title.setTitle('Edit Log Detail');
-      this.auth.observe((user: firebase.User) => {
-        this.db
-          .list<Location>('/users/' + this.auth.user.uid + '/painlog',
-            ref => ref.orderByKey().equalTo(this.location.key)
-          )
-          .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
-            const loc: Location = p.payload.val();
-            loc.key = p.key;
-            return loc;
-          }))).subscribe((loc: Location[]) => {
-            this.addedPicker = loc[0].added;
-            this.removedPicker = loc[0].removed;
-            this.validationsForm.controls.added.setValue(loc[0].added);
-            this.validationsForm.controls.removed.setValue(loc[0].removed);
-            this.validationsForm.controls.label.setValue(loc[0].label);
-            this.validationsForm.controls.severity.setValue(loc[0].severity);
-            this.validationsForm.controls.description.setValue(loc[0].description);
-        });
-      })
+      this.db
+        .data<Location>(this.location)
+        .subscribe((loc: Location[]) => {
+          this.addedPicker = loc[0].added;
+          this.removedPicker = loc[0].removed;
+          this.validationsForm.controls.added.setValue(loc[0].added);
+          this.validationsForm.controls.removed.setValue(loc[0].removed);
+          this.validationsForm.controls.label.setValue(loc[0].label);
+          this.validationsForm.controls.severity.setValue(loc[0].severity);
+          this.validationsForm.controls.description.setValue(loc[0].description);
+      });
     } else {
       this.title.setTitle('New Log Detail');
     }
@@ -102,13 +90,10 @@ export class LocationDetailPage implements OnInit {
   }
 
   updateLocation(loc: Location) {
-    const user = this.auth.user;
-    if (user) {
-      if (this.location) {
-        loc.x = this.location.x;
-        loc.y = this.location.y;
-        this.db.object('/users/' + user.uid + '/painlog/' + this.location.key).set(loc);
-      }
+    if (this.location) {
+      loc.x = this.location.x;
+      loc.y = this.location.y;
+      this.db.data(this.location);
     }
     this.dismiss();
   }
@@ -146,12 +131,9 @@ export class LocationDetailPage implements OnInit {
         }, {
           text: 'Delete',
           handler: () => {
-            const user = this.auth.user;
-            if (user) {
-              if (this.location) {
-                this.location.removed = this.getNowDateIsoString();
-                this.updateLocation(this.location);
-              }
+            if (this.location) {
+              this.location.removed = this.getNowDateIsoString();
+              this.updateLocation(this.location);
             }
           }
         }

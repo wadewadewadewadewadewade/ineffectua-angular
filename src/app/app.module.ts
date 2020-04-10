@@ -9,7 +9,7 @@ import { AppComponent } from './app.component';
 
 // Authentication
 import { environment } from 'src/environments/environment';
-import { AuthenticationService } from './services/authentication.service';
+import { FirebaseDataService } from './services/firebasedata.service';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
@@ -44,7 +44,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
   providers: [
     StatusBar,
     SplashScreen,
-    AuthenticationService,
+    FirebaseDataService,
     ScreenTrackingService,
     UserTrackingService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }

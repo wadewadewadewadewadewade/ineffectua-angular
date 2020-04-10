@@ -1,24 +1,14 @@
 import { Title } from '@angular/platform-browser';
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../services/authentication.service';
+import { FirebaseDataService, Appointment } from '../services/firebasedata.service';
 
 // Calendar API credentials
-import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 
 // new appointment
 import { ModalController } from '@ionic/angular';
 import { NewAppointmentPage } from './new-appointment/new-appointment.page';
 import { map } from 'rxjs/operators';
-
-export interface Appointment {
-  'key': string;
-  'contact': string;
-  'datetime': string;
-  'description': string;
-  'location': string;
-  'title': string;
-}
 
 @Component({
   selector: 'app-calendar',
@@ -32,8 +22,7 @@ export class CalendarPage implements OnInit {
 
   constructor(
     private title: Title,
-    private db: AngularFireDatabase,
-    private auth: AuthenticationService,
+    private db: FirebaseDataService,
     public modalController: ModalController
   ) {
     this.title.setTitle('Appointments');
@@ -62,23 +51,16 @@ export class CalendarPage implements OnInit {
   }
 
   getAppointmentList() {
-    this.auth.observe((user: firebase.User) => {
-      this.appointments = this.db
-        .list<Appointment>('/users/' + this.auth.user.uid + '/appointments',
-          ref => {
-            if (this.showOnlyUpcoming) {
-              return ref.orderByChild('datetime').startAt(this.getNowDateIsoString());
-            } else {
-              return ref.orderByChild('datetime');
-            }
+    this.appointments = this.db
+      .data<Appointment>(null as Appointment,
+        ref => {
+          if (this.showOnlyUpcoming) {
+            return ref.orderByChild('datetime').startAt(this.getNowDateIsoString());
+          } else {
+            return ref.orderByChild('datetime');
           }
-        )
-        .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
-          const appt: Appointment = p.payload.val();
-          appt.key = p.key;
-          return appt;
-        })));
-    });
+        }
+    );
   }
 
   checkboxChange($event: CustomEvent) {

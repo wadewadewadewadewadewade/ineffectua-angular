@@ -1,8 +1,6 @@
 import { map } from 'rxjs/operators';
-import { Appointment } from './../calendar.page';
 import { Component, OnInit } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
-import { AuthenticationService } from '../../services/authentication.service';
+import { FirebaseDataService, Appointment } from '../../services/firebasedata.service';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { ModalController, NavParams, AlertController } from '@ionic/angular';
 import { Title } from '@angular/platform-browser';
@@ -31,8 +29,7 @@ export class NewAppointmentPage implements OnInit {
 
   constructor(
     private title: Title,
-    private db: AngularFireDatabase,
-    private auth: AuthenticationService,
+    private db: FirebaseDataService,
     private formBuilder: FormBuilder,
     public modalController: ModalController,
     public navParams: NavParams,
@@ -60,21 +57,14 @@ export class NewAppointmentPage implements OnInit {
     this.key = this.navParams.get('key');
     if (this.key) {
       this.title.setTitle('Edit Appointment');
-      this.auth.observe((user: firebase.User) => {
-        this.db.list('/users/' + user.uid + '/appointments', ref => ref.orderByKey().equalTo(this.key))
-        .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
-          const appt: Appointment = p.payload.val();
-          appt.key = p.key;
-          return appt;
-        })))
-          .subscribe((appt: Appointment[]) => {
-            this.picker = appt[0].datetime;
-            this.validationsForm.controls.datetime.setValue(appt[0].datetime);
-            this.validationsForm.controls.title.setValue(appt[0].title);
-            this.validationsForm.controls.contact.setValue(appt[0].contact);
-            this.validationsForm.controls.location.setValue(appt[0].location);
-            this.validationsForm.controls.description.setValue(appt[0].description);
-        });
+      this.db.data(null as Appointment, ref => ref.orderByKey().equalTo(this.key))
+        .subscribe((appt: Appointment[]) => {
+          this.picker = appt[0].datetime;
+          this.validationsForm.controls.datetime.setValue(appt[0].datetime);
+          this.validationsForm.controls.title.setValue(appt[0].title);
+          this.validationsForm.controls.contact.setValue(appt[0].contact);
+          this.validationsForm.controls.location.setValue(appt[0].location);
+          this.validationsForm.controls.description.setValue(appt[0].description);
       });
     } else {
       this.title.setTitle('New Appointment');
@@ -106,11 +96,8 @@ export class NewAppointmentPage implements OnInit {
         }, {
           text: 'Delete',
           handler: () => {
-            const user = this.auth.user;
-            if (this.key && user) {
-              this.db.list('/users/' + user.uid + '/appointments').remove(this.key);
-              this.dismiss();
-            }
+            this.db.remove(this.key);
+            this.dismiss();
           }
         }
       ]
@@ -119,16 +106,12 @@ export class NewAppointmentPage implements OnInit {
   }
 
   addAppointment(appt: Appointment) {
-    const user = this.auth.user;
-    if (user) {
-      if (this.key) {
-        delete appt.key;
-        this.db.object('/users/' + user.uid + '/appointments/' + this.key).set(appt);
-      } else {
-        this.db.list('/users/' + user.uid + '/appointments').push(appt);
-      }
-      this.dismiss();
+    if (this.key) {
+      delete appt.key;
+      this.db.data(appt);
     }
+    this.db.data(appt);
+    this.dismiss();
   }
 
 }

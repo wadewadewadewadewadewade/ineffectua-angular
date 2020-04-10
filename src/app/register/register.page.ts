@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { AuthenticationService, Credentials } from '../services/authentication.service';
+import { FirebaseDataService, Credentials } from '../services/firebasedata.service';
 import { Router } from '@angular/router';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { __classPrivateFieldGet } from 'tslib';
@@ -15,7 +15,6 @@ const STATE_KEY_USER = makeStateKey('user');
   styleUrls: ['./register.page.scss'],
 })
 export class RegisterPage implements OnInit {
-
 
   validationsForm: FormGroup;
   errorMessage = '';
@@ -35,7 +34,7 @@ export class RegisterPage implements OnInit {
     private title: Title,
     private db: AngularFireDatabase,
     private router: Router,
-    private authService: AuthenticationService,
+    private authService: FirebaseDataService,
     private formBuilder: FormBuilder,
     private state: TransferState
   ) {
@@ -82,6 +81,5 @@ export class RegisterPage implements OnInit {
   goLoginPage() {
     this.router.navigate(['/'], { replaceUrl: true });
   }
-
 
 }
