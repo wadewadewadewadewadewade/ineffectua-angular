@@ -1,3 +1,4 @@
+import { Appointment } from './firebasedata.service';
 import { AngularFireDatabase, QueryFn } from '@angular/fire/database';
 import { first, map } from 'rxjs/operators';
 // From https://www.freakyjolly.com/ionic-4-firebase-login-registration-by-email-and-password/
@@ -123,7 +124,10 @@ export class FirebaseDataService implements CanLoad {
   /* General toold for inserting new or updating existing log entrties */
   data<T>(val: T, orderby?: QueryFn, dates?: string[]): Observable<T[]> {
     const path = ['users'],
-      collection = typeof val === typeof Location ? 'painlog' : 'appointment';
+      collection =
+        typeof val === typeof Location ? 'painlog'
+        : typeof val === typeof Appointment ? 'appointment'
+        : 'account';
     if (this.user) {
       path.push(this.user.uid);
       path.push(collection);
