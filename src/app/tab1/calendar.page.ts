@@ -51,16 +51,18 @@ export class CalendarPage implements OnInit {
   }
 
   getAppointmentList() {
-    this.appointments = this.db
-      .data<Appointment>(null as Appointment,
-        ref => {
-          if (this.showOnlyUpcoming) {
-            return ref.orderByChild('datetime').startAt(this.getNowDateIsoString());
-          } else {
-            return ref.orderByChild('datetime');
+    this.db.observe(() => {
+      this.appointments = this.db
+        .data<Appointment>(null,
+          ref => {
+            if (this.showOnlyUpcoming) {
+              return ref.orderByChild('datetime').startAt(this.getNowDateIsoString());
+            } else {
+              return ref.orderByChild('datetime');
+            }
           }
-        }
-    );
+      );
+    });
   }
 
   checkboxChange($event: CustomEvent) {

@@ -1,4 +1,3 @@
-import { Appointment } from './firebasedata.service';
 import { AngularFireDatabase, QueryFn } from '@angular/fire/database';
 import { first, map } from 'rxjs/operators';
 // From https://www.freakyjolly.com/ionic-4-firebase-login-registration-by-email-and-password/
@@ -9,12 +8,12 @@ import { Route } from '@angular/compiler/src/core';
 import { Observable } from 'rxjs';
 import { makeStateKey, TransferState } from '@angular/platform-browser';
 
-export interface Credentials {
+export class Credentials {
   email: string;
   password: string;
 }
 
-export interface Location {
+export class Location {
   'key': string;
   'x': string;
   'y': string;
@@ -25,7 +24,7 @@ export interface Location {
   'description': string;
 }
 
-export interface Appointment {
+export class Appointment {
   'key': string;
   'contact': string;
   'datetime': string;
@@ -59,12 +58,7 @@ export class FirebaseDataService implements CanLoad {
         this.router.navigate([this.authenticatedUrl], { replaceUrl: true })
           .then(res => { /* this.modalController.dismiss(); */ });
       }
-     }, () => {
-      if (this.router.url !== '/') {
-        this.router.navigate(['/'])
-          .then(res => { /* this.modalController.dismiss(); */ });
-      }
-    });
+     });
   }
 
   canLoad(route: Route): Promise<boolean> {
@@ -88,21 +82,38 @@ export class FirebaseDataService implements CanLoad {
     return this.angularFireAuth.authState.pipe(first()).toPromise();
   }
 
+  private saveUserAccountInformation(res: firebase.User) {
+    if (res) {
+      res.providerData.forEach(profile => {
+        this.db.object<firebase.UserInfo>('/users/' + res.uid + '/account').set(profile);
+      });
+    }
+  }
+
   registerUser(value: Credentials) {
-   return new Promise<any>((resolve, reject) => {
-     this.angularFireAuth.createUserWithEmailAndPassword(value.email, value.password)
-     .then(
-       res => resolve(res),
-       err => reject(err));
-   });
+    return new Promise<any>((resolve, reject) => {
+      this.angularFireAuth.createUserWithEmailAndPassword(value.email, value.password)
+        .then(
+          res => {
+            this.state.set(this.STATE_KEY_USER, res.user as firebase.User);
+            this.saveUserAccountInformation(res.user);
+            this.router.navigate([this.authenticatedUrl], { replaceUrl: true });
+            resolve(res);
+          },
+          err => reject(err));
+    });
   }
 
   loginUser(value: Credentials) {
    return new Promise<any>((resolve, reject) => {
-     this.angularFireAuth.signInWithEmailAndPassword(value.email, value.password)
-     .then(
-       res => resolve(res),
-       err => reject(err));
+      this.angularFireAuth.signInWithEmailAndPassword(value.email, value.password)
+        .then(
+          res => {
+            this.state.set(this.STATE_KEY_USER, res.user as firebase.User);
+            this.router.navigate([this.authenticatedUrl], { replaceUrl: true });
+            resolve(res);
+          },
+          err => reject(err));
    });
   }
 
@@ -111,10 +122,9 @@ export class FirebaseDataService implements CanLoad {
       if (this.angularFireAuth.currentUser) {
         this.angularFireAuth.signOut()
         .then(res => {
-          console.log(res);
           this.state.remove(this.STATE_KEY_USER);
           this.router.navigate(['/']);
-          resolve()
+          resolve();
         })
         .catch((error) => reject());
       }
@@ -122,12 +132,14 @@ export class FirebaseDataService implements CanLoad {
   }
 
   /* General toold for inserting new or updating existing log entrties */
-  data<T>(val: T, orderby?: QueryFn, dates?: string[]): Observable<T[]> {
+  data<T>(val?: T, orderby?: QueryFn, dates?: string[]): Observable<T[]> {
     const path = ['users'],
+      type: T = null,
       collection =
-        typeof val === typeof Location ? 'painlog'
-        : typeof val === typeof Appointment ? 'appointment'
+        type instanceof Location ? 'painlog'
+        : type instanceof Appointment ? 'appointments'
         : 'account';
+        // needs reading here: https://github.com/Microsoft/TypeScript/wiki/FAQ#why-cant-i-write-typeof-t-new-t-or-instanceof-t-in-my-generic-function
     if (this.user) {
       path.push(this.user.uid);
       path.push(collection);
@@ -144,14 +156,20 @@ export class FirebaseDataService implements CanLoad {
         } else {
           this.db.list('/' + path.join('/'), orderby).push(val);
         }
-    } else {
-      return this.db
-        .list<T>('/' + path.join('/'), orderby)
-        .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
-          const ret: T = p.payload.val(),
-            key = p.key();
-          return {...ret, key};
-        })));
+      } else {
+        console.log('/' + path.join('/'));
+        return this.db
+          .list<T>('/' + path.join('/'), orderby)
+          .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
+            const ret: T = p.payload.val();
+            console.log(typeof ret, ret);
+            if (p.key) {
+              const key = p.key();
+              return {...ret, key};
+            } else {
+              return ret;
+            }
+          })));
       }
     }
   }
@@ -169,17 +187,17 @@ export class FirebaseDataService implements CanLoad {
     }
   }
 
-  observe(success: any, fail?: any): void {
+  observe(success: any): void {
     this.angularFireAuth.onAuthStateChanged((user: firebase.User) => {
       if (user) {
         this.user = user;
         success(user);
       } else {
         this.user = null;
-        if (fail) {
-          fail();
-        }
+        this.logoutUser();
       }
+    }, (err) => {
+      this.logoutUser();
     });
   }
 
