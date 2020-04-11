@@ -53,7 +53,7 @@ export class CalendarPage implements OnInit {
   getAppointmentList() {
     this.db.observe(() => {
       this.appointments = this.db
-        .data<Appointment>(null,
+        .get<Appointment>(
           ref => {
             if (this.showOnlyUpcoming) {
               return ref.orderByChild('datetime').startAt(this.getNowDateIsoString());

@@ -20,7 +20,7 @@ export class AccountPage implements OnInit {
 
   ngOnInit() {
     this.db
-      .data<Array<any>>(null)
+      .get<Array<any>>()
       .subscribe((info: Array<any>) => {
         this.properties = info.filter((val: any) => { return val.key !== 'uid' && val.key !== 'providerId'; });
     });

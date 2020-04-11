@@ -131,19 +131,57 @@ export class FirebaseDataService implements CanLoad {
     });
   }
 
+  /*type Constructor<T> = { new (...args: any[]): T }; https://dev.to/krumpet/generic-type-guard-in-typescript-258l
+  function typeGuard<T>(o, className: Constructor<T>): o is T {
+    return o instanceof className;
+  }*/
+
+  private isReallyInstanceOf<T>(ctor: { new(...args: any[]): T }, obj: T) {
+    return obj instanceof ctor;
+  }
+
   /* General toold for inserting new or updating existing log entrties */
-  data<T>(val?: T, orderby?: QueryFn, dates?: string[]): Observable<T[]> {
+  get<T>(orderby?: QueryFn): Observable<T[]> {
     const path = ['users'],
-      type: T = null,
+      dummy: T = null as T,
+      d2: Location = null as Location,
       collection =
-        type instanceof Location ? 'painlog'
-        : type instanceof Appointment ? 'appointments'
+        this.isReallyInstanceOf<T>(dummy, d2) ? 'painlog'
+        : this.isReallyInstanceOf<T>(dummy, Appointment) ? 'appointments'
         : 'account';
         // needs reading here: https://github.com/Microsoft/TypeScript/wiki/FAQ#why-cant-i-write-typeof-t-new-t-or-instanceof-t-in-my-generic-function
     if (this.user) {
       path.push(this.user.uid);
       path.push(collection);
-      if (val) {
+      console.log('/' + path.join('/'));
+      return this.db
+        .list<T>('/' + path.join('/'), orderby)
+        .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
+          const ret: T = p.payload.val();
+          console.log(typeof ret, ret);
+          if (p.key) {
+            const key = p.key();
+            return {...ret, key};
+          } else {
+            return ret;
+          }
+        })));
+    }
+  }
+
+  /* General toold for inserting new or updating existing log entrties */
+  put<T>(val: T, orderby?: QueryFn): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const path = ['users'],
+        type: T = null,
+        collection =
+          type instanceof Location ? 'painlog'
+          : type instanceof Appointment ? 'appointments'
+          : 'account';
+          // needs reading here: https://github.com/Microsoft/TypeScript/wiki/FAQ#why-cant-i-write-typeof-t-new-t-or-instanceof-t-in-my-generic-function
+      if (this.user) {
+        path.push(this.user.uid);
+        path.push(collection);
         const key =  Object.keys(val).find(obj => obj === 'key');
         if (key) {
           path.push(key);
@@ -156,22 +194,11 @@ export class FirebaseDataService implements CanLoad {
         } else {
           this.db.list('/' + path.join('/'), orderby).push(val);
         }
+        resolve();
       } else {
-        console.log('/' + path.join('/'));
-        return this.db
-          .list<T>('/' + path.join('/'), orderby)
-          .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
-            const ret: T = p.payload.val();
-            console.log(typeof ret, ret);
-            if (p.key) {
-              const key = p.key();
-              return {...ret, key};
-            } else {
-              return ret;
-            }
-          })));
+        reject();
       }
-    }
+    })
   }
 
   remove<T>(val: T) {

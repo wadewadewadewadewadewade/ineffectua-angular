@@ -57,7 +57,7 @@ export class NewAppointmentPage implements OnInit {
     this.key = this.navParams.get('key');
     if (this.key) {
       this.title.setTitle('Edit Appointment');
-      this.db.data(null as Appointment, ref => ref.orderByKey().equalTo(this.key))
+      this.db.get(ref => ref.orderByKey().equalTo(this.key))
         .subscribe((appt: Appointment[]) => {
           this.picker = appt[0].datetime;
           this.validationsForm.controls.datetime.setValue(appt[0].datetime);
@@ -108,9 +108,8 @@ export class NewAppointmentPage implements OnInit {
   addAppointment(appt: Appointment) {
     if (this.key) {
       delete appt.key;
-      this.db.data(appt);
     }
-    this.db.data(appt);
+    this.db.put(appt);
     this.dismiss();
   }
 

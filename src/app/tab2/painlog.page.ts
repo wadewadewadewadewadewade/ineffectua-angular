@@ -40,8 +40,7 @@ export class PainLogPage implements OnInit {
     }
 
   ngOnInit() {
-    this.locations = this.db
-      .data(null as Location, ref => ref.orderByChild('added'), [this.addedDate, this.removedDate]);
+    this.locations = this.db.get(ref => ref.orderByChild('added'));
   }
 
   /* Tool to get ISO string format for dates and datetimes */
@@ -153,7 +152,7 @@ export class PainLogPage implements OnInit {
         ), (this.body.nativeElement as HTMLElement).offsetHeight
       ) + '%';
       mark.style.transform = '';
-      this.db.data(location);
+      this.db.put(location);
     }
   }
 
@@ -202,12 +201,12 @@ export class PainLogPage implements OnInit {
 
   /* used to siplify the event handler reference in the html file */
   addLocationMouse($event: MouseEvent) {
-    this.db.data(this.getCordinatesMouse($event, null));
+    this.db.put(this.getCordinatesMouse($event, null));
   }
 
   /* used to siplify the event handler reference in the html file */
   addLocationTouch($event: TouchEvent) {
-    this.db.data(this.getCordinatesTouch($event, null));
+    this.db.put(this.getCordinatesTouch($event, null));
   }
 
   /* launch the deail modal */
@@ -236,7 +235,7 @@ export class PainLogPage implements OnInit {
           handler: () => {
             if (loc.key) {
               loc.removed = this.getDateIsoString();
-              this.db.data(loc);
+              this.db.remove(loc);
             }
           }
         }
