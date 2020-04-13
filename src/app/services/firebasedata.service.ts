@@ -22,6 +22,7 @@ export class Location {
   'removed': string;
   'label': string;
   'description': string;
+  constructor(args: any[]) {}
 }
 
 export class Appointment {
@@ -131,25 +132,9 @@ export class FirebaseDataService implements CanLoad {
     });
   }
 
-  /*type Constructor<T> = { new (...args: any[]): T }; https://dev.to/krumpet/generic-type-guard-in-typescript-258l
-  function typeGuard<T>(o, className: Constructor<T>): o is T {
-    return o instanceof className;
-  }*/
-
-  private isReallyInstanceOf<T>(ctor: { new(...args: any[]): T }, obj: T) {
-    return obj instanceof ctor;
-  }
-
   /* General toold for inserting new or updating existing log entrties */
-  get<T>(orderby?: QueryFn): Observable<T[]> {
-    const path = ['users'],
-      dummy: T = null as T,
-      d2: Location = null as Location,
-      collection =
-        this.isReallyInstanceOf<T>(dummy, d2) ? 'painlog'
-        : this.isReallyInstanceOf<T>(dummy, Appointment) ? 'appointments'
-        : 'account';
-        // needs reading here: https://github.com/Microsoft/TypeScript/wiki/FAQ#why-cant-i-write-typeof-t-new-t-or-instanceof-t-in-my-generic-function
+  get<T>(collection: string, orderby?: QueryFn): Observable<T[]> {
+    const path = ['users'];
     if (this.user) {
       path.push(this.user.uid);
       path.push(collection);
@@ -170,15 +155,9 @@ export class FirebaseDataService implements CanLoad {
   }
 
   /* General toold for inserting new or updating existing log entrties */
-  put<T>(val: T, orderby?: QueryFn): Promise<void> {
+  put<T>(collection: string, val: T, orderby?: QueryFn): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const path = ['users'],
-        type: T = null,
-        collection =
-          type instanceof Location ? 'painlog'
-          : type instanceof Appointment ? 'appointments'
-          : 'account';
-          // needs reading here: https://github.com/Microsoft/TypeScript/wiki/FAQ#why-cant-i-write-typeof-t-new-t-or-instanceof-t-in-my-generic-function
+      const path = ['users'];
       if (this.user) {
         path.push(this.user.uid);
         path.push(collection);
@@ -201,9 +180,8 @@ export class FirebaseDataService implements CanLoad {
     })
   }
 
-  remove<T>(val: T) {
-    const path = ['users'],
-      collection = typeof val === typeof Location ? 'painlog' : 'appointment';
+  remove<T>(collection: string, val: T) {
+    const path = ['users'];
     if (this.user) {
       path.push(this.user.uid);
       path.push(collection);

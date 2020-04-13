@@ -17,6 +17,7 @@ import { map } from 'rxjs/operators';
 })
 export class CalendarPage implements OnInit {
 
+  private collection = 'appointments';
   public appointments = new Observable<Appointment[]>();
   public showOnlyUpcoming = true;
 
@@ -53,7 +54,7 @@ export class CalendarPage implements OnInit {
   getAppointmentList() {
     this.db.observe(() => {
       this.appointments = this.db
-        .get<Appointment>(
+        .get<Appointment>(this.collection,
           ref => {
             if (this.showOnlyUpcoming) {
               return ref.orderByChild('datetime').startAt(this.getNowDateIsoString());

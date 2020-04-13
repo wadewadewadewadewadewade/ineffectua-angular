@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, HostListener, Pipe, PipeTransform } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FirebaseDataService, Location } from '../services/firebasedata.service';
 import { AlertController } from '@ionic/angular';
@@ -6,9 +6,7 @@ import { AlertController } from '@ionic/angular';
 // location detail
 import { ModalController } from '@ionic/angular';
 import { LocationDetailPage } from './location-detail/location-detail.page';
-import { Event } from '@angular/router';
-import { RangeChangeEventDetail, RangeValue } from '@ionic/core';
-import { isDate } from 'util';
+import { RangeChangeEventDetail } from '@ionic/core';
 import { Title } from '@angular/platform-browser';
 
 @Component({
@@ -18,6 +16,7 @@ import { Title } from '@angular/platform-browser';
 })
 export class PainLogPage implements OnInit {
 
+  collection = 'painlog';
   public locations: Observable<Location[]>;
   private addedDate = '1970-01-01T00:00:00-07:00';
   private removedDate = this.getDateIsoString();
@@ -40,7 +39,13 @@ export class PainLogPage implements OnInit {
     }
 
   ngOnInit() {
-    this.locations = this.db.get(ref => ref.orderByChild('added'));
+    this.locations = this.db.get<Location>(this.collection, ref => ref.orderByChild('added'));
+    this.locations.subscribe(i => {
+      i.forEach((o: Location) => {
+        this.checkDate(new Date(o.added));
+        this.checkDate(new Date(o.removed));
+      })
+    })
   }
 
   /* Tool to get ISO string format for dates and datetimes */
@@ -93,7 +98,6 @@ export class PainLogPage implements OnInit {
     const centeredDateInMilliseconds = ((this.newest.getTime() - this.oldest.getTime()) * this.centered) / 2 + this.oldest.getTime(),
       centeredDate = new Date(centeredDateInMilliseconds);
     this.dateLabel = this.getShortDateString(centeredDate);
-    console.log($event, IsDate);
     switch (this.range) {
       case 3: // all dates
         this.rangeLabel = 'all';
@@ -152,7 +156,7 @@ export class PainLogPage implements OnInit {
         ), (this.body.nativeElement as HTMLElement).offsetHeight
       ) + '%';
       mark.style.transform = '';
-      this.db.put(location);
+      this.db.put(this.collection, location);
     }
   }
 
@@ -201,12 +205,12 @@ export class PainLogPage implements OnInit {
 
   /* used to siplify the event handler reference in the html file */
   addLocationMouse($event: MouseEvent) {
-    this.db.put(this.getCordinatesMouse($event, null));
+    this.db.put(this.collection, this.getCordinatesMouse($event, null));
   }
 
   /* used to siplify the event handler reference in the html file */
   addLocationTouch($event: TouchEvent) {
-    this.db.put(this.getCordinatesTouch($event, null));
+    this.db.put(this.collection, this.getCordinatesTouch($event, null));
   }
 
   /* launch the deail modal */
@@ -235,7 +239,7 @@ export class PainLogPage implements OnInit {
           handler: () => {
             if (loc.key) {
               loc.removed = this.getDateIsoString();
-              this.db.remove(loc);
+              this.db.remove(this.collection, loc);
             }
           }
         }

@@ -12,6 +12,7 @@ import { Title } from '@angular/platform-browser';
 })
 export class NewAppointmentPage implements OnInit {
 
+  private collection = 'appointments';
   validationsForm: FormGroup;
   errorMessage = '';
   validationMessages = {
@@ -34,9 +35,7 @@ export class NewAppointmentPage implements OnInit {
     public modalController: ModalController,
     public navParams: NavParams,
     public alertController: AlertController
-  ) {
-
-  }
+  ) {}
 
   ngOnInit() {
     this.validationsForm = this.formBuilder.group({
@@ -57,7 +56,7 @@ export class NewAppointmentPage implements OnInit {
     this.key = this.navParams.get('key');
     if (this.key) {
       this.title.setTitle('Edit Appointment');
-      this.db.get(ref => ref.orderByKey().equalTo(this.key))
+      this.db.get(this.collection, ref => ref.orderByKey().equalTo(this.key))
         .subscribe((appt: Appointment[]) => {
           this.picker = appt[0].datetime;
           this.validationsForm.controls.datetime.setValue(appt[0].datetime);
@@ -96,7 +95,7 @@ export class NewAppointmentPage implements OnInit {
         }, {
           text: 'Delete',
           handler: () => {
-            this.db.remove(this.key);
+            this.db.remove(this.collection, this.key);
             this.dismiss();
           }
         }
@@ -109,7 +108,7 @@ export class NewAppointmentPage implements OnInit {
     if (this.key) {
       delete appt.key;
     }
-    this.db.put(appt);
+    this.db.put(this.collection, appt);
     this.dismiss();
   }
 

@@ -8,7 +8,7 @@
   <div #body class="figure">
 
     <div *ngFor="let location of (locations | async)" [style.left]="location.x" [style.top]="location.y" [ngClass]="{'mark': true, 'flip': getFlip(location.x)}" [dir]="getDir(location.x)" ngDraggable (stopped)="stoppedDragging($event, location)">
-      <form (ngSubmit)="db.put(location)" >
+      <form (ngSubmit)="db.put(collection, location)" >
         <ion-item color="transparent" class="ion-no-padding" (click)="$event.stopPropagation()">
           <ion-input type="text" [(value)]="location.severity" color="transparent" readonly></ion-input>
           <ion-button (click)="infoLocation(location)" fill="clear" slot="end"><ion-icon name="information-circle-outline" color="white"></ion-icon></ion-button>

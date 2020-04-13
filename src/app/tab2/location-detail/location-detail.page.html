@@ -1,5 +1,5 @@
 <ion-content padding>
-  <form class="form" [formGroup]="validationsForm"  (ngSubmit)="db.put(validationsForm.value)">
+  <form class="form" [formGroup]="validationsForm"  (ngSubmit)="db.put(collection, validationsForm.value)">
     <ion-item>
       <ion-label position="floating" color="primary">label</ion-label>
       <ion-input type="text" formControlName="label" class="form-controll" required></ion-input>

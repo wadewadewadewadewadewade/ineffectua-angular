@@ -11,6 +11,7 @@ import { ModalController, NavParams, AlertController } from '@ionic/angular';
 })
 export class LocationDetailPage implements OnInit {
 
+  collection = 'painlog';
   validationsForm: FormGroup;
   errorMessage = '';
   validationMessages = {
@@ -60,7 +61,7 @@ export class LocationDetailPage implements OnInit {
     if (this.location) {
       this.title.setTitle('Edit Log Detail');
       this.db
-        .get<Location>(ref => ref.orderByKey().equalTo(this.location.key))
+        .get<Location>(this.collection, ref => ref.orderByKey().equalTo(this.location.key))
         .subscribe((loc: Location[]) => {
           this.addedPicker = loc[0].added;
           this.removedPicker = loc[0].removed;
@@ -93,7 +94,7 @@ export class LocationDetailPage implements OnInit {
     if (this.location) {
       loc.x = this.location.x;
       loc.y = this.location.y;
-      this.db.put(this.location);
+      this.db.put(this.collection, this.location);
     }
     this.dismiss();
   }
