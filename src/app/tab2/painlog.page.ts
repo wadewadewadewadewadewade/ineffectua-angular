@@ -45,7 +45,7 @@ export class PainLogPage implements OnInit {
         this.checkDate(new Date(o.added));
         this.checkDate(new Date(o.removed));
       })
-    })
+    });
   }
 
   /* Tool to get ISO string format for dates and datetimes */
@@ -120,7 +120,7 @@ export class PainLogPage implements OnInit {
         this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 4.32e+7); // plus 0.5 days
         break;
     }
-    // this.getLocationsList();
+    this.locations = this.db.get<Location>(this.collection, ref => ref.orderByChild('added'));
   }
 
   /* Used to swap the display of th elog entry when it gets too close to the right edge of the screen, so it's buttons are still usable */

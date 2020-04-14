@@ -138,19 +138,17 @@ export class FirebaseDataService implements CanLoad {
     if (this.user) {
       path.push(this.user.uid);
       path.push(collection);
-      console.log('/' + path.join('/'));
       return this.db
         .list<T>('/' + path.join('/'), orderby)
         .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
           const ret: T = p.payload.val();
-          console.log(typeof ret, ret);
           if (p.key) {
-            const key = p.key();
+            const key = p.key;
             return {...ret, key};
           } else {
             return ret;
           }
-        })));
+        })))
     }
   }
 
@@ -180,15 +178,17 @@ export class FirebaseDataService implements CanLoad {
     })
   }
 
-  remove<T>(collection: string, val: T) {
+  remove<T>(collection: string, val: T): Promise<void> {
     const path = ['users'];
     if (this.user) {
       path.push(this.user.uid);
       path.push(collection);
       const key =  Object.keys(val).find(obj => obj === 'key');
-      this.db
+      return this.db
         .list<T>('/' + path.join('/'))
         .remove(key);
+    } else {
+      return new Promise<void>((resolve, reject) => { reject(); })
     }
   }
 

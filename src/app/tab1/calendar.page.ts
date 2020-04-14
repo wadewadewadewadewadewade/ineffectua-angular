@@ -8,7 +8,6 @@ import { Observable } from 'rxjs';
 // new appointment
 import { ModalController } from '@ionic/angular';
 import { NewAppointmentPage } from './new-appointment/new-appointment.page';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-calendar',
@@ -18,7 +17,7 @@ import { map } from 'rxjs/operators';
 export class CalendarPage implements OnInit {
 
   private collection = 'appointments';
-  public appointments = new Observable<Appointment[]>();
+  public appointments: Observable<Appointment[]>;
   public showOnlyUpcoming = true;
 
   constructor(
@@ -30,7 +29,18 @@ export class CalendarPage implements OnInit {
   }
 
   ngOnInit() {
-    this.getAppointmentList();
+    this.db.observe(() => {
+      this.appointments = this.db
+        .get<Appointment>(this.collection,
+          ref => {
+            if (this.showOnlyUpcoming) {
+              return ref.orderByChild('datetime').startAt(this.getNowDateIsoString());
+            } else {
+              return ref.orderByChild('datetime');
+            }
+          }
+      );
+    });
   }
 
   getNowDateIsoString() {
@@ -51,24 +61,19 @@ export class CalendarPage implements OnInit {
       ':' + pad(tzo % 60);
   }
 
-  getAppointmentList() {
-    this.db.observe(() => {
-      this.appointments = this.db
-        .get<Appointment>(this.collection,
-          ref => {
-            if (this.showOnlyUpcoming) {
-              return ref.orderByChild('datetime').startAt(this.getNowDateIsoString());
-            } else {
-              return ref.orderByChild('datetime');
-            }
-          }
-      );
-    });
-  }
-
   checkboxChange($event: CustomEvent) {
     this.showOnlyUpcoming = $event.detail.checked;
-    this.getAppointmentList();
+    this.appointments = this.db
+      .get<Appointment>(this.collection,
+        ref => {
+          if (this.showOnlyUpcoming) {
+            return ref.orderByChild('datetime').startAt(this.getNowDateIsoString());
+          } else {
+            return ref.orderByChild('datetime');
+          }
+        }
+    );
+    this.appointments.subscribe(ref => { /*do nothing as sbscribe causes page refresh*/ })
   }
 
   async addAppointment() {
