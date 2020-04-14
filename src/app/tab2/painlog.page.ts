@@ -6,7 +6,6 @@ import { AlertController } from '@ionic/angular';
 // location detail
 import { ModalController } from '@ionic/angular';
 import { LocationDetailPage } from './location-detail/location-detail.page';
-import { RangeChangeEventDetail } from '@ionic/core';
 import { Title } from '@angular/platform-browser';
 
 @Component({
@@ -23,7 +22,7 @@ export class PainLogPage implements OnInit {
   private oldest: Date;
   private newest: Date;
   public range = 4;
-  public centered = 1;
+  public centered = 100;
   public rangeLabel = 'all';
   public dateLabel = this.getShortDateString(new Date());
 
@@ -68,8 +67,8 @@ export class PainLogPage implements OnInit {
   }
 
   getShortDateString(d: Date): string {
-    const day = d.getDay(),
-      month = d.getMonth();
+    const day = d.getDate(),
+      month = d.getMonth() + 1;
     let dayString: string, monthString: string;
     if (day < 10) {
       dayString = '0' + day;
@@ -94,10 +93,16 @@ export class PainLogPage implements OnInit {
     }
   }
 
-  updateDate($event: RangeChangeEventDetail, IsDate: boolean) {
-    const centeredDateInMilliseconds = ((this.newest.getTime() - this.oldest.getTime()) * this.centered) / 2 + this.oldest.getTime(),
+  updateDate($event: CustomEvent, IsDate: boolean) {
+    if (IsDate) {
+      this.centered = $event.detail.value as number;
+    } else {
+      this.range = $event.detail.value as number;
+    }
+    const centeredDateInMilliseconds = ((this.newest.getTime() - this.oldest.getTime()) * (this.centered / 100)) / 2 + this.oldest.getTime(),
       centeredDate = new Date(centeredDateInMilliseconds);
     this.dateLabel = this.getShortDateString(centeredDate);
+    console.log(this.dateLabel);
     switch (this.range) {
       case 3: // all dates
         this.rangeLabel = 'all';
