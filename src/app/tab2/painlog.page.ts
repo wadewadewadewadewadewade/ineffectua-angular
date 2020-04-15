@@ -1,7 +1,7 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, ContentChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FirebaseDataService, Location } from '../services/firebasedata.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, IonLabel } from '@ionic/angular';
 
 // location detail
 import { ModalController } from '@ionic/angular';
@@ -23,10 +23,10 @@ export class PainLogPage implements OnInit {
   private newest: Date;
   public range = 4;
   public centered = 100;
-  public rangeLabel = 'all';
-  public dateLabel = this.getShortDateString(new Date());
 
   @ViewChild('body') body: ElementRef;
+  @ViewChild('dateLabel') dateLabel: ElementRef;
+  @ViewChild('rangeLabel') rangeLabel: ElementRef;
 
   constructor(
     private title: Title,
@@ -45,6 +45,8 @@ export class PainLogPage implements OnInit {
         this.checkDate(new Date(o.removed));
       })
     });
+    (this.rangeLabel.nativeElement as HTMLElement).innerHTML = 'all';
+    (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(new Date());
   }
 
   /* Tool to get ISO string format for dates and datetimes */
@@ -99,32 +101,36 @@ export class PainLogPage implements OnInit {
     } else {
       this.range = $event.detail.value as number;
     }
-    const centeredDateInMilliseconds = ((this.newest.getTime() - this.oldest.getTime()) * (this.centered / 100)) / 2 + this.oldest.getTime(),
+    const centeredDateInMilliseconds = (
+        (this.newest.getTime() - this.oldest.getTime()) * (this.centered / 100)
+      ) / 2 + this.oldest.getTime(),
       centeredDate = new Date(centeredDateInMilliseconds);
-    this.dateLabel = this.getShortDateString(centeredDate);
+    let rangeLabelText = 'all';
     console.log(this.dateLabel);
     switch (this.range) {
       case 3: // all dates
-        this.rangeLabel = 'all';
+      rangeLabelText = 'all';
         this.addedDate = '1970-01-01T00:00:00-07:00';
         this.removedDate = this.getDateIsoString();
         break;
       case 2: // 1 year
-        this.rangeLabel = '1yr';
+      rangeLabelText = '1yr';
         this.addedDate = this.getDateIsoString(centeredDateInMilliseconds - 1.577e+10); // minus 6 months
         this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 1.577e+10); // plus six months
         break;
       case 1: // 1 week
-        this.rangeLabel = '1wk';
+      rangeLabelText = '1wk';
         this.addedDate = this.getDateIsoString(centeredDateInMilliseconds - 3.024e+8); // minus 3.5 days
         this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 3.024e+8); // plus 3.5 days
         break;
       case 0: // 1 day
-        this.rangeLabel = '1d';
+        rangeLabelText = '1d';
         this.addedDate = this.getDateIsoString(centeredDateInMilliseconds - 4.32e+7); // minus 0.5 days
         this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 4.32e+7); // plus 0.5 days
         break;
     }
+    (this.rangeLabel.nativeElement as HTMLElement).innerHTML = rangeLabelText;
+    (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(centeredDate);
     this.locations = this.db.get<Location>(this.collection, ref => ref.orderByChild('added'));
   }
 

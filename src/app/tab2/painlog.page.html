@@ -38,13 +38,13 @@
     <ion-item>
       <ion-label color="primary">Range</ion-label>
       <ion-range snaps="true" ticks="true" steps="1" min="0" max="3" value="3" (ionChange)="updateDate($event, false)">
-        <ion-label slot="start">{{ rangeLabel }}</ion-label>
+        <ion-label #rangeLabel slot="start"></ion-label>
       </ion-range>
     </ion-item>
     <ion-item>
       <ion-label color="primary">Date</ion-label>
       <ion-range min="0" max="100" value="100" (ionChange)="updateDate($event, true)">
-        <ion-label slot="start">{{ dateLabel }}</ion-label>
+        <ion-label #dateLabel slot="start"></ion-label>
       </ion-range>
     </ion-item>
   </ion-list>
