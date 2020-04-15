@@ -8,39 +8,6 @@ import { ModalController } from '@ionic/angular';
 import { LocationDetailPage } from './location-detail/location-detail.page';
 import { Title } from '@angular/platform-browser';
 
-// pipe
-import { Pipe, PipeTransform } from '@angular/core';
-import { map } from 'rxjs/operators';
-
-@Pipe({
-  name: 'datefilter'
-})
-export class LocationDateFilterPipe implements PipeTransform {
-
-  transform(itemsObservable: Observable<Location[]>, addedString: string, removedString: string): Observable<Location[]> {
-    if (!itemsObservable) { return new Observable<Location[]>() }
-    if (!addedString || ! removedString) { return itemsObservable }
-    const added = new Date(addedString);
-    const removed = new Date(removedString);
-    return itemsObservable.pipe<Location[]>(map((items: Location[], index: number) => {
-      const response = [];
-      items.forEach(it => {
-        if (new Date(it.added) >= added) {
-          if (!it.removed || new Date(it.removed) > removed) {
-            response.push(true);
-          } else {
-            response.push(false);
-          }
-        } else {
-          response.push(false);
-        }
-      });
-      return response;
-    }));
-  }
-
-}
-
 @Component({
   selector: 'app-painlog',
   templateUrl: 'painlog.page.html',
@@ -78,8 +45,11 @@ export class PainLogPage implements OnInit {
         this.checkDate(new Date(o.removed));
       })
     });
-    (this.rangeLabel.nativeElement as HTMLElement).innerHTML = 'all';
-    (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(new Date());
+    // it seems that one of these two Elements is consistanly not defined at app-load, so trying a short delay
+    setTimeout(() => {
+      (this.rangeLabel.nativeElement as HTMLElement).innerHTML = 'all';
+      (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(new Date());
+    }, 100)
   }
 
   /* Tool to get ISO string format for dates and datetimes */
@@ -163,6 +133,10 @@ export class PainLogPage implements OnInit {
     }
     (this.rangeLabel.nativeElement as HTMLElement).innerHTML = rangeLabelText;
     (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(centeredDate);
+    // TODO: I ham having trouble getting the ngFor to reflect this change
+    this.locations.subscribe(locations => {
+      console.log(locations);
+    })
   }
 
   /* Used to swap the display of th elog entry when it gets too close to the right edge of the screen, so it's buttons are still usable */

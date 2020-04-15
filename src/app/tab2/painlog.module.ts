@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { PainLogPage } from './painlog.page';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 import { AngularDraggableModule } from 'angular2-draggable';
+import { LocationdatefilterPipe } from './locationdatefilter.pipe';
 
 @NgModule({
   imports: [
@@ -16,6 +17,6 @@ import { AngularDraggableModule } from 'angular2-draggable';
     AngularDraggableModule,
     RouterModule.forChild([{ path: '', component: PainLogPage }])
   ],
-  declarations: [PainLogPage]
+  declarations: [PainLogPage, LocationdatefilterPipe]
 })
 export class PainLogPageModule {}

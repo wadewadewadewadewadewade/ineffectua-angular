@@ -7,7 +7,7 @@
 
   <div #body class="figure">
 
-    <div *ngFor="let location of (locations | async | datefilter : addedDate : removedDate)" [style.left]="location.x" [style.top]="location.y" [ngClass]="{'mark': true, 'flip': getFlip(location.x)}" [dir]="getDir(location.x)" ngDraggable (stopped)="stoppedDragging($event, location)">
+    <div *ngFor="let location of (locations | async | locationdatefilter : addedDate : removedDate)" [style.left]="location.x" [style.top]="location.y" [ngClass]="{'mark': true, 'flip': getFlip(location.x)}" [dir]="getDir(location.x)" ngDraggable (stopped)="stoppedDragging($event, location)">
       <form (ngSubmit)="db.put(collection, location)" >
         <ion-item color="transparent" class="ion-no-padding" (click)="$event.stopPropagation()">
           <ion-input type="text" [(value)]="location.severity" color="transparent" readonly></ion-input>
