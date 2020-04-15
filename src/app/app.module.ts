@@ -25,7 +25,9 @@ import { SplashPage } from './splash/splash.page';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent
+  ],
   entryComponents: [
     SplashPage,
   ],

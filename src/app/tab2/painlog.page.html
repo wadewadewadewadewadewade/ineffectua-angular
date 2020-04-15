@@ -7,7 +7,7 @@
 
   <div #body class="figure">
 
-    <div *ngFor="let location of (locations | async)" [style.left]="location.x" [style.top]="location.y" [ngClass]="{'mark': true, 'flip': getFlip(location.x)}" [dir]="getDir(location.x)" ngDraggable (stopped)="stoppedDragging($event, location)">
+    <div *ngFor="let location of (locations | async | datefilter : addedDate : removedDate)" [style.left]="location.x" [style.top]="location.y" [ngClass]="{'mark': true, 'flip': getFlip(location.x)}" [dir]="getDir(location.x)" ngDraggable (stopped)="stoppedDragging($event, location)">
       <form (ngSubmit)="db.put(collection, location)" >
         <ion-item color="transparent" class="ion-no-padding" (click)="$event.stopPropagation()">
           <ion-input type="text" [(value)]="location.severity" color="transparent" readonly></ion-input>
@@ -38,13 +38,13 @@
     <ion-item>
       <ion-label color="primary">Range</ion-label>
       <ion-range snaps="true" ticks="true" steps="1" min="0" max="3" value="3" (ionChange)="updateDate($event, false)">
-        <ion-label #rangeLabel slot="start"></ion-label>
+        <ion-label slot="start"><span #rangeLabel></span></ion-label>
       </ion-range>
     </ion-item>
     <ion-item>
       <ion-label color="primary">Date</ion-label>
       <ion-range min="0" max="100" value="100" (ionChange)="updateDate($event, true)">
-        <ion-label #dateLabel slot="start"></ion-label>
+        <ion-label slot="start"><span #dateLabel></span></ion-label>
       </ion-range>
     </ion-item>
   </ion-list>

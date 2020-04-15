@@ -1,12 +1,45 @@
-import { Component, OnInit, ElementRef, ViewChild, ContentChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FirebaseDataService, Location } from '../services/firebasedata.service';
-import { AlertController, IonLabel } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 
 // location detail
 import { ModalController } from '@ionic/angular';
 import { LocationDetailPage } from './location-detail/location-detail.page';
 import { Title } from '@angular/platform-browser';
+
+// pipe
+import { Pipe, PipeTransform } from '@angular/core';
+import { map } from 'rxjs/operators';
+
+@Pipe({
+  name: 'datefilter'
+})
+export class LocationDateFilterPipe implements PipeTransform {
+
+  transform(itemsObservable: Observable<Location[]>, addedString: string, removedString: string): Observable<Location[]> {
+    if (!itemsObservable) { return new Observable<Location[]>() }
+    if (!addedString || ! removedString) { return itemsObservable }
+    const added = new Date(addedString);
+    const removed = new Date(removedString);
+    return itemsObservable.pipe<Location[]>(map((items: Location[], index: number) => {
+      const response = [];
+      items.forEach(it => {
+        if (new Date(it.added) >= added) {
+          if (!it.removed || new Date(it.removed) > removed) {
+            response.push(true);
+          } else {
+            response.push(false);
+          }
+        } else {
+          response.push(false);
+        }
+      });
+      return response;
+    }));
+  }
+
+}
 
 @Component({
   selector: 'app-painlog',
@@ -17,8 +50,8 @@ export class PainLogPage implements OnInit {
 
   collection = 'painlog';
   public locations: Observable<Location[]>;
-  private addedDate = '1970-01-01T00:00:00-07:00';
-  private removedDate = this.getDateIsoString();
+  public addedDate = '1970-01-01T00:00:00-07:00';
+  public removedDate = this.getDateIsoString();
   private oldest: Date;
   private newest: Date;
   public range = 4;
@@ -106,7 +139,6 @@ export class PainLogPage implements OnInit {
       ) / 2 + this.oldest.getTime(),
       centeredDate = new Date(centeredDateInMilliseconds);
     let rangeLabelText = 'all';
-    console.log(this.dateLabel);
     switch (this.range) {
       case 3: // all dates
       rangeLabelText = 'all';
@@ -131,7 +163,6 @@ export class PainLogPage implements OnInit {
     }
     (this.rangeLabel.nativeElement as HTMLElement).innerHTML = rangeLabelText;
     (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(centeredDate);
-    this.locations = this.db.get<Location>(this.collection, ref => ref.orderByChild('added'));
   }
 
   /* Used to swap the display of th elog entry when it gets too close to the right edge of the screen, so it's buttons are still usable */
