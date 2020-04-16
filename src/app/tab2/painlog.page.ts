@@ -18,7 +18,7 @@ export class PainLogPage implements OnInit {
 
   collection = 'painlog';
   private locationsBehaviorSubject: BehaviorSubject<Location[]>;
-  public locations: Location[];
+  public locations: Location[] = [];
   public addedDate = this.getDateIsoString('1970-01-01T00:00:00-07:00');
   public removedDate = this.getDateIsoString();
   private oldest: Date;
@@ -38,22 +38,22 @@ export class PainLogPage implements OnInit {
     public modalController: ModalController
   ) {
     this.title.setTitle('Pain Log');
-    this.locationsBehaviorSubject = this.db.get<Location>(this.collection, ref => ref.orderByChild('added'));
-    this.locationsBehaviorSubject.subscribe(i => {
-      i.forEach((o: Location) => {
-        this.checkDate(o.added);
-        this.checkDate(o.removed);
-      });
-      this.locations = i;
-    });
-    // it seems that one of these two Elements is consistanly not defined at app-load, so trying a short delay
-    setTimeout(() => {
-      (this.rangeLabel.nativeElement as HTMLElement).innerHTML = 'all';
-      (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(new Date());
-    }, 100)
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.db.observe(() => {
+      this.locationsBehaviorSubject = this.db.get<Location>(this.collection, ref => ref.orderByChild('added'));
+      this.locationsBehaviorSubject.subscribe(i => {
+        i.forEach((o: Location) => {
+          this.checkDate(o.added);
+          this.checkDate(o.removed);
+        });
+        this.locations = i;
+      });
+      (this.rangeLabel.nativeElement as HTMLElement).innerHTML = 'all';
+      (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(new Date());
+    });
+  }
 
   /* Tool to get ISO string format for dates and datetimes */
   private getDateIsoString(val?: string | number) {

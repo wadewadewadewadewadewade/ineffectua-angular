@@ -11,18 +11,16 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Calendar</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
-  <ion-list>
-    <ion-item *ngFor="let appt of appointments | async" (click)="edit(appt.key)">
+  <ion-list *ngIf="appointments.length > 0">
+    <ion-item *ngFor="let appt of appointments" (click)="edit(appt.key)">
       <span [innerHTML]="parseDate(appt.datetime)"></span>
       <span>{{appt.title}}</span>{{appt.description}}
     </ion-item>
   </ion-list>
+  <div *ngIf="appointments.length > 0" class="empty">
+    No upcoming appointments
+  </div>
   
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="addAppointment()" fill="clear"><ion-icon name="add" color="white"></ion-icon></ion-fab-button>

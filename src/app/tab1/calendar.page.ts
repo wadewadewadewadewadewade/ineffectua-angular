@@ -17,7 +17,8 @@ import { NewAppointmentPage } from './new-appointment/new-appointment.page';
 export class CalendarPage implements OnInit {
 
   private collection = 'appointments';
-  public appointments: BehaviorSubject<Appointment[]>;
+  private appointmentsBehaviorSubject: BehaviorSubject<Appointment[]>;
+  public appointments: Appointment[];
   public showOnlyUpcoming = true;
 
   constructor(
@@ -30,16 +31,13 @@ export class CalendarPage implements OnInit {
 
   ngOnInit() {
     this.db.observe(() => {
-      this.appointments = this.db
+      this.appointmentsBehaviorSubject = this.db
         .get<Appointment>(this.collection,
           ref => {
-            if (this.showOnlyUpcoming) {
-              return ref.orderByChild('datetime').startAt(this.getNowDateIsoString());
-            } else {
-              return ref.orderByChild('datetime');
-            }
+            return ref.orderByChild('datetime');
           }
       );
+      this.appointmentsBehaviorSubject.subscribe(items => this.appointments);
     });
   }
 
@@ -63,7 +61,7 @@ export class CalendarPage implements OnInit {
 
   checkboxChange($event: CustomEvent) {
     this.showOnlyUpcoming = $event.detail.checked;
-    this.appointments = this.db
+    /*this.appointmentsBehaviorSubject = this.db
       .get<Appointment>(this.collection,
         ref => {
           if (this.showOnlyUpcoming) {
@@ -72,8 +70,8 @@ export class CalendarPage implements OnInit {
             return ref.orderByChild('datetime');
           }
         }
-    );
-    this.appointments.next(null);
+    );*/
+    this.appointmentsBehaviorSubject.next(null);
   }
 
   async addAppointment() {

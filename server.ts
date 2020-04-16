@@ -13,6 +13,7 @@ export function app() {
   const server = express();
   const distFolder = join(process.cwd(), 'www');
   const indexHtml = existsSync(join(distFolder, 'index.original.html')) ? 'index.original.html' : 'index';
+  const cors = require('cors');
 
   // Our Universal express-engine (found @ https://github.com/angular/universal/tree/master/modules/express-engine)
   server.engine('html', ngExpressEngine({
@@ -22,35 +23,6 @@ export function app() {
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
-  // Example Express Rest API endpoints
-  // server.get('/api/**', (req, res) => { });
-  // Serve static files from /browser
-  server.get('*.*', express.static(distFolder, {
-    maxAge: '1y'
-  }));
-
-  // All regular routes use the Universal engine
-  server.get('*', (req, res) => {
-    res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
-  });
-
-  return server;
-}
-
-function run() {
-  const port = process.env.PORT || 4000;
-
-  // Start up the Node server
-  const server = app(),
-    cors = require('cors');
-
-  /*const { expressCspHeader, INLINE, NONE, SELF } = require('express-csp-header');
-  server.use(expressCspHeader({
-    policies: {
-      'default-src': ['*'],
-      'img-src': [SELF],
-    }
-  }));*/
   const originsWhitelist = [
     'http://localhost:4200', // this is my front-end url for development
      'https://ineffectua.web.app'
@@ -63,6 +35,28 @@ function run() {
     credentials: true
   };
   server.use(cors(corsOptions));
+
+  // Example Express Rest API endpoints
+  // server.get('/api/**', (req, res) => { });
+  // Serve static files from /browser
+  server.get('*.*', express.static(distFolder, {
+    maxAge: '1y'
+  }));
+
+  // All regular routes use the Universal engine
+  server.get('*', (req, res) => {
+    res.setHeader('X-Frame-Options', 'ALLOW-FROM https://console.firebase.google.com*');
+    res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
+  });
+
+  return server;
+}
+
+function run() {
+  const port = process.env.PORT || 4000;
+
+  // Start up the Node server
+  const server = app();
 
   // Don't listen when deploying to Firebase Cloud Functions - https://fireship.io/lessons/angular-universal-firebase/
   // if (!process.argv.includes('firebase')) {
