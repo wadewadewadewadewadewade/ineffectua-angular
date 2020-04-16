@@ -1,12 +1,13 @@
 import { AngularFireDatabase, QueryFn } from '@angular/fire/database';
 import { first, map } from 'rxjs/operators';
 // From https://www.freakyjolly.com/ionic-4-firebase-login-registration-by-email-and-password/
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router, CanLoad } from '@angular/router';
 import { Route } from '@angular/compiler/src/core';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { makeStateKey, TransferState } from '@angular/platform-browser';
+import { response } from 'express';
 
 export class Credentials {
   email: string;
@@ -47,19 +48,18 @@ export class FirebaseDataService implements CanLoad {
     private angularFireAuth: AngularFireAuth,
     private db: AngularFireDatabase,
     private router: Router,
-    private state: TransferState
+    private state: TransferState,
+    public ngZone: NgZone // NgZone service to remove outside scope warning
   ) {
     this.user = this.state.get(this.STATE_KEY_USER, null);
-    if (!this.user) {
+    /*if (!this.user) {
       this.router.navigate(['/'])
-        .then(res => { /* this.modalController.dismiss(); */ });
     }
     this.observe((user: firebase.User) => {
       if (this.router.url.indexOf('/tabs/') < 0) {
         this.router.navigate([this.authenticatedUrl], { replaceUrl: true })
-          .then(res => { /* this.modalController.dismiss(); */ });
       }
-     });
+     });*/
   }
 
   canLoad(route: Route): Promise<boolean> {
@@ -69,11 +69,11 @@ export class FirebaseDataService implements CanLoad {
           if (user) {
             resolve(user !== null);
           } else {
-            this.router.navigate(['/']);
+            this.ngZone.run(() => { this.router.navigate(['/']) })
           }
         })
         .catch(() => {
-          this.router.navigate(['/']);
+          this.ngZone.run(() => { this.router.navigate(['/']) })
           resolve(false);
         })
     );
@@ -133,12 +133,13 @@ export class FirebaseDataService implements CanLoad {
   }
 
   /* General toold for inserting new or updating existing log entrties */
-  get<T>(collection: string, orderby?: QueryFn): Observable<T[]> {
-    const path = ['users'];
+  get<T>(collection: string, orderby?: QueryFn): BehaviorSubject<T[]> {
+    const path = ['users'],
+      res = new BehaviorSubject<T[]>([]);
     if (this.user) {
       path.push(this.user.uid);
       path.push(collection);
-      return this.db
+      this.db
         .list<T>('/' + path.join('/'), orderby)
         .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
           const ret: T = p.payload.val();
@@ -148,8 +149,9 @@ export class FirebaseDataService implements CanLoad {
           } else {
             return ret;
           }
-        })))
+        }))).subscribe((locations: T[]) => res.next(locations));
     }
+    return res;
   }
 
   /* General toold for inserting new or updating existing log entrties */

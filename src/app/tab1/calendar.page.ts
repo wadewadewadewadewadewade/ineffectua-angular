@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FirebaseDataService, Appointment } from '../services/firebasedata.service';
 
 // Calendar API credentials
-import { Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 // new appointment
 import { ModalController } from '@ionic/angular';
@@ -17,7 +17,7 @@ import { NewAppointmentPage } from './new-appointment/new-appointment.page';
 export class CalendarPage implements OnInit {
 
   private collection = 'appointments';
-  public appointments: Observable<Appointment[]>;
+  public appointments: BehaviorSubject<Appointment[]>;
   public showOnlyUpcoming = true;
 
   constructor(
@@ -73,7 +73,7 @@ export class CalendarPage implements OnInit {
           }
         }
     );
-    this.appointments.subscribe(ref => { /*do nothing as sbscribe causes page refresh*/ })
+    this.appointments.next(null);
   }
 
   async addAppointment() {

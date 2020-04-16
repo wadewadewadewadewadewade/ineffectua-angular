@@ -1,5 +1,5 @@
-import { Component, OnInit, ElementRef, ViewChild, Output, ChangeDetectorRef } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit, ElementRef, ViewChild, Output } from '@angular/core';
+import { BehaviorSubject} from 'rxjs';
 import { FirebaseDataService, Location } from '../services/firebasedata.service';
 import { AlertController } from '@ionic/angular';
 
@@ -17,8 +17,9 @@ import { EventEmitter } from 'events';
 export class PainLogPage implements OnInit {
 
   collection = 'painlog';
-  public locations: Observable<Location[]>;
-  public addedDate = '1970-01-01T00:00:00-07:00';
+  private locationsBehaviorSubject: BehaviorSubject<Location[]>;
+  public locations: Location[];
+  public addedDate = this.getDateIsoString('1970-01-01T00:00:00-07:00');
   public removedDate = this.getDateIsoString();
   private oldest: Date;
   private newest: Date;
@@ -34,16 +35,16 @@ export class PainLogPage implements OnInit {
     private title: Title,
     public alertController: AlertController,
     public db: FirebaseDataService,
-    public modalController: ModalController,
-    private changeRef: ChangeDetectorRef
+    public modalController: ModalController
   ) {
     this.title.setTitle('Pain Log');
-    this.locations = this.db.get<Location>(this.collection, ref => ref.orderByChild('added'));
-    this.locations.subscribe(i => {
+    this.locationsBehaviorSubject = this.db.get<Location>(this.collection, ref => ref.orderByChild('added'));
+    this.locationsBehaviorSubject.subscribe(i => {
       i.forEach((o: Location) => {
-        this.checkDate(new Date(o.added));
-        this.checkDate(new Date(o.removed));
-      })
+        this.checkDate(o.added);
+        this.checkDate(o.removed);
+      });
+      this.locations = i;
     });
     // it seems that one of these two Elements is consistanly not defined at app-load, so trying a short delay
     setTimeout(() => {
@@ -91,13 +92,27 @@ export class PainLogPage implements OnInit {
   }
 
   /* Used by getLocationsList to get the oldest and newset log entry */
-  private checkDate(val: Date) {
-    if (!this.oldest || val < this.oldest) {
-      this.oldest = val;
+  private checkDate(val: string) {
+    if (val) {
+      const d = new Date(val);
+      if (!this.oldest || d < this.oldest) {
+        this.oldest = d;
+      }
+      if (!this.newest || d > this.newest) {
+        this.newest = d;
+      }
     }
-    if (!this.newest || val > this.newest) {
-      this.newest = val;
+  }
+
+  locationWithinDateRange(location: Location, addedString: string, removedString: string): boolean {
+    const added = new Date(addedString);
+    const removed = new Date(removedString);
+    if (new Date(location.added) >= added) {
+      if (!location.removed || new Date(location.removed) > removed) {
+        return true;
+      }
     }
+    return false;
   }
 
   updateDate($event: CustomEvent, IsDate: boolean) {
@@ -114,7 +129,7 @@ export class PainLogPage implements OnInit {
     switch (this.range) {
       case 3: // all dates
       rangeLabelText = 'all';
-        this.addedDate = '1970-01-01T00:00:00-07:00';
+        this.addedDate = this.getDateIsoString('1970-01-01T00:00:00-07:00');
         this.removedDate = this.getDateIsoString();
         break;
       case 2: // 1 year
@@ -133,10 +148,8 @@ export class PainLogPage implements OnInit {
         this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 4.32e+7); // plus 0.5 days
         break;
     }
-    console.log('A' + this.addedDate + this.removedDate);
     (this.rangeLabel.nativeElement as HTMLElement).innerHTML = rangeLabelText;
     (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(centeredDate);
-    this.changeRef.detectChanges();
   }
 
   /* Used to swap the display of th elog entry when it gets too close to the right edge of the screen, so it's buttons are still usable */
