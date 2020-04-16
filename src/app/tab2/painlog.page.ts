@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, Output, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FirebaseDataService, Location } from '../services/firebasedata.service';
 import { AlertController } from '@ionic/angular';
@@ -7,6 +7,7 @@ import { AlertController } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { LocationDetailPage } from './location-detail/location-detail.page';
 import { Title } from '@angular/platform-browser';
+import { EventEmitter } from 'events';
 
 @Component({
   selector: 'app-painlog',
@@ -27,17 +28,16 @@ export class PainLogPage implements OnInit {
   @ViewChild('body') body: ElementRef;
   @ViewChild('dateLabel') dateLabel: ElementRef;
   @ViewChild('rangeLabel') rangeLabel: ElementRef;
+  @Output() changed = new EventEmitter();
 
   constructor(
     private title: Title,
     public alertController: AlertController,
     public db: FirebaseDataService,
-    public modalController: ModalController
-    ) {
-      this.title.setTitle('Pain Log');
-    }
-
-  ngOnInit() {
+    public modalController: ModalController,
+    private changeRef: ChangeDetectorRef
+  ) {
+    this.title.setTitle('Pain Log');
     this.locations = this.db.get<Location>(this.collection, ref => ref.orderByChild('added'));
     this.locations.subscribe(i => {
       i.forEach((o: Location) => {
@@ -51,6 +51,8 @@ export class PainLogPage implements OnInit {
       (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(new Date());
     }, 100)
   }
+
+  ngOnInit() { }
 
   /* Tool to get ISO string format for dates and datetimes */
   private getDateIsoString(val?: string | number) {
@@ -131,12 +133,10 @@ export class PainLogPage implements OnInit {
         this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 4.32e+7); // plus 0.5 days
         break;
     }
+    console.log('A' + this.addedDate + this.removedDate);
     (this.rangeLabel.nativeElement as HTMLElement).innerHTML = rangeLabelText;
     (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(centeredDate);
-    // TODO: I ham having trouble getting the ngFor to reflect this change
-    this.locations.subscribe(locations => {
-      console.log(locations);
-    })
+    this.changeRef.detectChanges();
   }
 
   /* Used to swap the display of th elog entry when it gets too close to the right edge of the screen, so it's buttons are still usable */
