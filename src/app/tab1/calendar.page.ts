@@ -8,6 +8,7 @@ import { BehaviorSubject } from 'rxjs';
 // new appointment
 import { ModalController } from '@ionic/angular';
 import { NewAppointmentPage } from './new-appointment/new-appointment.page';
+import { app } from 'firebase';
 
 @Component({
   selector: 'app-calendar',
@@ -18,7 +19,7 @@ export class CalendarPage implements OnInit {
 
   private collection = 'appointments';
   private appointmentsBehaviorSubject: BehaviorSubject<Appointment[]>;
-  public appointments: Appointment[];
+  public appointments: Appointment[] = [];
   public showOnlyUpcoming = true;
 
   constructor(
@@ -37,7 +38,17 @@ export class CalendarPage implements OnInit {
             return ref.orderByChild('datetime');
           }
       );
-      this.appointmentsBehaviorSubject.subscribe(items => this.appointments);
+      this.appointmentsBehaviorSubject.subscribe(items => this.appointments = this.filterAppointments(items));
+    });
+  }
+
+  filterAppointments(appointments: Appointment[]): Appointment[] {
+    return appointments.filter(appointment => {
+      if (this.showOnlyUpcoming && new Date(appointment.datetime) > new Date()) {
+        return appointment;
+      } else if (!this.showOnlyUpcoming) {
+        return appointment;
+      }
     });
   }
 
@@ -61,17 +72,7 @@ export class CalendarPage implements OnInit {
 
   checkboxChange($event: CustomEvent) {
     this.showOnlyUpcoming = $event.detail.checked;
-    /*this.appointmentsBehaviorSubject = this.db
-      .get<Appointment>(this.collection,
-        ref => {
-          if (this.showOnlyUpcoming) {
-            return ref.orderByChild('datetime').startAt(this.getNowDateIsoString());
-          } else {
-            return ref.orderByChild('datetime');
-          }
-        }
-    );*/
-    this.appointmentsBehaviorSubject.next(null);
+    this.appointments = this.filterAppointments(this.appointmentsBehaviorSubject.value);
   }
 
   async addAppointment() {

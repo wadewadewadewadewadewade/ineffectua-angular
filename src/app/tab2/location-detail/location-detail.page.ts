@@ -61,7 +61,7 @@ export class LocationDetailPage implements OnInit {
     if (this.location) {
       this.title.setTitle('Edit Log Detail');
       this.db
-        .get<Location>(this.collection, ref => ref.orderByKey().equalTo(this.location.key))
+        .get<Location>(this.collection + '/' + this.location.key)
         .subscribe((loc: Location[]) => {
           this.addedPicker = loc[0].added;
           this.removedPicker = loc[0].removed;

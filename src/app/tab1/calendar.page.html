@@ -18,7 +18,7 @@
       <span>{{appt.title}}</span>{{appt.description}}
     </ion-item>
   </ion-list>
-  <div *ngIf="appointments.length > 0" class="empty">
+  <div *ngIf="appointments.length === 0" class="empty">
     No upcoming appointments
   </div>
   
