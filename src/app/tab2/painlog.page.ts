@@ -19,16 +19,13 @@ export class PainLogPage implements OnInit {
   collection = 'painlog';
   private locationsBehaviorSubject: BehaviorSubject<Location[]>;
   public locations: Location[] = [];
-  public addedDate = this.getDateIsoString('1970-01-01T00:00:00-07:00');
-  public removedDate = this.getDateIsoString();
   private oldest: Date;
   private newest: Date;
-  public range = 3; // 0=1d, 1=1w, 2=1y, 3=all
   public centered = 100; // later this is devided by 100 to get percentage
+  public centeredDate = this.getDateIsoString('1970-01-01T00:00:00-07:00'); // arbitrary initial value
 
   @ViewChild('body') body: ElementRef;
   @ViewChild('dateLabel') dateLabel: ElementRef;
-  @ViewChild('rangeLabel') rangeLabel: ElementRef;
   @Output() changed = new EventEmitter();
 
   constructor(
@@ -42,16 +39,22 @@ export class PainLogPage implements OnInit {
 
   ngOnInit() {
     this.db.observe(() => {
-      this.locationsBehaviorSubject = this.db.get<Location>(this.collection, ref => ref.orderByChild('added'));
+      this.locationsBehaviorSubject = this.db.get<Location>(this.collection);
       this.locationsBehaviorSubject.subscribe(i => {
-        i.forEach((o: Location) => {
-          this.checkDate(o.added);
-          this.checkDate(o.removed);
-        });
-        this.locations = i;
-        (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(this.newest);
+        if (i && i.length > 0) {
+          i.forEach((o: Location) => {
+            this.checkDate(o.added);
+            this.checkDate(o.removed);
+          });
+          this.locations = i;
+          this.centeredDate = this.getShortDateString(new Date(
+            (
+              (this.newest.getTime() - this.oldest.getTime()) * (this.centered / 100)
+            ) + this.oldest.getTime()
+          ));
+          (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.centeredDate;
+        }
       });
-      (this.rangeLabel.nativeElement as HTMLElement).innerHTML = 'all';
     });
   }
 
@@ -82,58 +85,43 @@ export class PainLogPage implements OnInit {
   private checkDate(val: string) {
     if (val) {
       const d = new Date(val);
-      if (!this.oldest || d < this.oldest) {
+      if (!this.oldest) {
+        this.oldest = d;
+      } else if (d < this.oldest) {
         this.oldest = d;
       }
-      if (!this.newest || d > this.newest) {
+      if (!this.newest) {
+        this.newest = d;
+      } else if (d > this.newest) {
         this.newest = d;
       }
     }
   }
 
-  locationWithinDateRange(location: Location, addedString: string, removedString: string): boolean {
-    const added = new Date(addedString);
-    const removed = new Date(removedString);
-    if (new Date(location.added) >= added) {
-      if (!location.removed || new Date(location.removed) > removed) {
+  locationWithinDateRange(location: Location, centeredDateString: string): boolean {
+    const centeredDate = new Date(centeredDateString);
+    if (!location.removed && new Date(this.getShortDateString(new Date(location.added))) < centeredDate) {
+      return true;
+    } else if (new Date(this.getShortDateString(new Date(location.added))) >= centeredDate) {
+      if (!location.removed) {
+        return true;
+      } else if (new Date(this.getShortDateString(new Date(location.removed))) > centeredDate) {
         return true;
       }
     }
     return false;
   }
 
-  private clip(val: number, lowerBound: number, upperBound: number): number {
-    if (val < lowerBound) return lowerBound;
-    else if (val > upperBound) return upperBound;
-    else return val;
-  }
-
   updateDate($event: CustomEvent, IsDate: boolean) {
     if (IsDate) {
       this.centered = $event.detail.value as number;
-    } else {
-      this.range = $event.detail.value as number;
     }
     const centeredDateInMilliseconds =
       (
         (this.newest.getTime() - this.oldest.getTime()) * (this.centered / 100)
-      ) + this.oldest.getTime(),
-      centeredDate = new Date(centeredDateInMilliseconds),
-      half = this.range === 2 ? 1.577e+10 // 6 months in milliseconds
-        : this.range === 1 ? 3.024e+8 // 3.5 days in milliseconds
-        : this.range === 0 ? 4.32e+7 // 0.5 days in milliseconds
-        : 1e+10000, // all
-      rangeLabelText = this.range === 2 ? '1yr'
-        : this.range === 1 ? '1wk'
-        : this.range === 0 ? '1d'
-        : 'all',
-      lowerBound: number = this.clip(centeredDateInMilliseconds - half, 0, this.oldest.getTime()),
-      upperBound: number = this.clip(centeredDateInMilliseconds + half, 0, this.newest.getTime());
-    this.addedDate = this.getDateIsoString(lowerBound);
-    this.removedDate = this.getDateIsoString(upperBound);
-    console.log(lowerBound, this.addedDate);
-    (this.rangeLabel.nativeElement as HTMLElement).innerHTML = rangeLabelText;
-    (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(centeredDate);
+      ) + this.oldest.getTime();
+    this.centeredDate = this.getShortDateString(new Date(centeredDateInMilliseconds));
+    (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.centeredDate;
   }
 
   /* Used to swap the display of th elog entry when it gets too close to the right edge of the screen, so it's buttons are still usable */
