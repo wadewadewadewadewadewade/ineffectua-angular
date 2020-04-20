@@ -60,16 +60,18 @@ export class LocationDetailPage implements OnInit {
     this.location = this.navParams.get('location');
     if (this.location) {
       this.title.setTitle('Edit Log Detail');
-      this.db
-        .get<Location>(this.collection + '/' + this.location.key)
-        .subscribe((loc: Location[]) => {
-          this.addedPicker = loc[0].added;
-          this.removedPicker = loc[0].removed;
-          this.validationsForm.controls.added.setValue(loc[0].added);
-          this.validationsForm.controls.removed.setValue(loc[0].removed);
-          this.validationsForm.controls.label.setValue(loc[0].label);
-          this.validationsForm.controls.severity.setValue(loc[0].severity);
-          this.validationsForm.controls.description.setValue(loc[0].description);
+      this.db.getItem<Location>(this.collection, this.location.key).then((loc: Location) => {
+        if (loc) {
+          this.addedPicker = loc.added;
+          this.removedPicker = loc.removed;
+          this.validationsForm.controls.added.setValue(loc.added);
+          this.validationsForm.controls.removed.setValue(loc.removed);
+          this.validationsForm.controls.label.setValue(loc.label);
+          this.validationsForm.controls.severity.setValue(loc.severity);
+          this.validationsForm.controls.description.setValue(loc.description);
+        } else {
+          console.log(this.collection + '/' + this.location.key, loc)
+        }
       });
     } else {
       this.title.setTitle('New Log Detail');

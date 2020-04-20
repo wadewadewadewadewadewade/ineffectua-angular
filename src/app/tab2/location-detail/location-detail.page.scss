@@ -6,8 +6,11 @@ form {
   flex-direction:column;
   height:100%;
   max-height:100%;
+  ion-label {
+    padding-bottom: 0.2em;
+  }
   ion-item {
-    min-height:57px;
+    min-height:calc(57px + 0.2em);
   }
   ion-button {
     min-height:45px;

@@ -23,8 +23,8 @@ export class PainLogPage implements OnInit {
   public removedDate = this.getDateIsoString();
   private oldest: Date;
   private newest: Date;
-  public range = 4;
-  public centered = 100;
+  public range = 3; // 0=1d, 1=1w, 2=1y, 3=all
+  public centered = 100; // later this is devided by 100 to get percentage
 
   @ViewChild('body') body: ElementRef;
   @ViewChild('dateLabel') dateLabel: ElementRef;
@@ -49,15 +49,15 @@ export class PainLogPage implements OnInit {
           this.checkDate(o.removed);
         });
         this.locations = i;
+        (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(this.newest);
       });
       (this.rangeLabel.nativeElement as HTMLElement).innerHTML = 'all';
-      (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(new Date());
     });
   }
 
   /* Tool to get ISO string format for dates and datetimes */
-  private getDateIsoString(val?: string | number) {
-    const d = val ? new Date(val) : new Date(),
+  private getDateIsoString(val?: string | number | Date) {
+    const d = val instanceof Date ? val : val ? new Date(val) : new Date(),
       tzo = -d.getTimezoneOffset(),
       dif = tzo >= 0 ? '+' : '-',
       pad = (num: number) => {
@@ -75,20 +75,7 @@ export class PainLogPage implements OnInit {
   }
 
   getShortDateString(d: Date): string {
-    const day = d.getDate(),
-      month = d.getMonth() + 1;
-    let dayString: string, monthString: string;
-    if (day < 10) {
-      dayString = '0' + day;
-    } else {
-      dayString = '' + day;
-    }
-    if (month < 10) {
-      monthString = '0' + month;
-    } else {
-      monthString = '' + month;
-    }
-    return d.getFullYear() + '-' + monthString + '-' + dayString;
+    return this.getDateIsoString(d).substr(0, 10);
   }
 
   /* Used by getLocationsList to get the oldest and newset log entry */
@@ -115,39 +102,36 @@ export class PainLogPage implements OnInit {
     return false;
   }
 
+  private clip(val: number, lowerBound: number, upperBound: number): number {
+    if (val < lowerBound) return lowerBound;
+    else if (val > upperBound) return upperBound;
+    else return val;
+  }
+
   updateDate($event: CustomEvent, IsDate: boolean) {
     if (IsDate) {
       this.centered = $event.detail.value as number;
     } else {
       this.range = $event.detail.value as number;
     }
-    const centeredDateInMilliseconds = (
+    const centeredDateInMilliseconds =
+      (
         (this.newest.getTime() - this.oldest.getTime()) * (this.centered / 100)
-      ) / 2 + this.oldest.getTime(),
-      centeredDate = new Date(centeredDateInMilliseconds);
-    let rangeLabelText = 'all';
-    switch (this.range) {
-      case 3: // all dates
-      rangeLabelText = 'all';
-        this.addedDate = this.getDateIsoString('1970-01-01T00:00:00-07:00');
-        this.removedDate = this.getDateIsoString();
-        break;
-      case 2: // 1 year
-      rangeLabelText = '1yr';
-        this.addedDate = this.getDateIsoString(centeredDateInMilliseconds - 1.577e+10); // minus 6 months
-        this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 1.577e+10); // plus six months
-        break;
-      case 1: // 1 week
-      rangeLabelText = '1wk';
-        this.addedDate = this.getDateIsoString(centeredDateInMilliseconds - 3.024e+8); // minus 3.5 days
-        this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 3.024e+8); // plus 3.5 days
-        break;
-      case 0: // 1 day
-        rangeLabelText = '1d';
-        this.addedDate = this.getDateIsoString(centeredDateInMilliseconds - 4.32e+7); // minus 0.5 days
-        this.removedDate = this.getDateIsoString(centeredDateInMilliseconds + 4.32e+7); // plus 0.5 days
-        break;
-    }
+      ) + this.oldest.getTime(),
+      centeredDate = new Date(centeredDateInMilliseconds),
+      half = this.range === 2 ? 1.577e+10 // 6 months in milliseconds
+        : this.range === 1 ? 3.024e+8 // 3.5 days in milliseconds
+        : this.range === 0 ? 4.32e+7 // 0.5 days in milliseconds
+        : 1e+10000, // all
+      rangeLabelText = this.range === 2 ? '1yr'
+        : this.range === 1 ? '1wk'
+        : this.range === 0 ? '1d'
+        : 'all',
+      lowerBound: number = this.clip(centeredDateInMilliseconds - half, 0, this.oldest.getTime()),
+      upperBound: number = this.clip(centeredDateInMilliseconds + half, 0, this.newest.getTime());
+    this.addedDate = this.getDateIsoString(lowerBound);
+    this.removedDate = this.getDateIsoString(upperBound);
+    console.log(lowerBound, this.addedDate);
     (this.rangeLabel.nativeElement as HTMLElement).innerHTML = rangeLabelText;
     (this.dateLabel.nativeElement as HTMLElement).innerHTML = this.getShortDateString(centeredDate);
   }

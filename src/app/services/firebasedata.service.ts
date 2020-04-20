@@ -155,6 +155,29 @@ export class FirebaseDataService implements CanLoad {
   }
 
   /* General toold for inserting new or updating existing log entrties */
+  getItem<T>(collection: string, uid: string): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const path = ['users'],
+        res: any = {};
+      if (this.user) {
+        path.push(this.user.uid);
+        path.push(collection);
+        path.push(uid);
+        res.key = uid;
+        this.db
+          .list<T>('/' + path.join('/'))
+          .snapshotChanges().pipe(map((mutation: any[]) => mutation.map(p => {
+            res[p.key] = p.payload.val();
+          }))).subscribe(observer => {
+            resolve(res);
+          });
+      } else {
+        reject(res);
+      }
+    })
+  }
+
+  /* General toold for inserting new or updating existing log entrties */
   put<T>(collection: string, val: T, orderby?: QueryFn): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       const path = ['users'];
