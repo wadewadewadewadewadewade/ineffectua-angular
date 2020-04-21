@@ -100,12 +100,12 @@ export class PainLogPage implements OnInit {
 
   locationWithinDateRange(location: Location, centeredDateString: string): boolean {
     const centeredDate = new Date(centeredDateString);
-    if (!location.removed && new Date(this.getShortDateString(new Date(location.added))) < centeredDate) {
+    if (!location.removed && new Date(this.getShortDateString(new Date(location.added))) <= centeredDate) {
       return true;
-    } else if (new Date(this.getShortDateString(new Date(location.added))) >= centeredDate) {
-      if (!location.removed) {
-        return true;
-      } else if (new Date(this.getShortDateString(new Date(location.removed))) > centeredDate) {
+    } else if (new Date(this.getShortDateString(new Date(location.added))) <= centeredDate) {
+      if (location.removed && new Date(this.getShortDateString(new Date(location.removed))) <= centeredDate) {
+        return false;
+      } else {
         return true;
       }
     }

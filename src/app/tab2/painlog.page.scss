@@ -1,9 +1,29 @@
 ion-content {
   display:flex;
+  flex-direction: column;
+  ion-list {
+    display:flex;
+    flex-direction: row;
+    flex: 1;
+    padding:0;
+    ion-label, ion-range, ion-item {
+      display: flex;
+    }
+    ion-item {
+      width:100%;
+    }
+    .display-label {
+      flex-grow:0;
+      overflow: visible;
+    }
+    ion-range {
+      width: 100%;
+    }
+  }
 }
 .figure { 
   width:calc((100vh - 112px) * 0.575);
-  margin:calc((50vh - 229px) / 2) auto;
+  margin:auto;
   --offset-top: auto;
   --offset-bottom: auto;
   position: relative;

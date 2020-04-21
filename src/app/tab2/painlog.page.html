@@ -1,9 +1,4 @@
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Pain Log</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
   <div #body class="figure">
 
@@ -36,10 +31,11 @@
 
   <ion-list>
     <ion-item>
-      <ion-label color="primary">Date</ion-label>
+      <ion-label color="primary" class="display-label">Date</ion-label>
       <ion-range min="0" max="100" value="100" (ionChange)="updateDate($event, true)">
         <ion-label slot="start"><span #dateLabel></span></ion-label>
       </ion-range>
     </ion-item>
   </ion-list>
+
 </ion-content>
