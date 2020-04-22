@@ -1,6 +1,20 @@
 ion-content {
-  display:flex;
-  flex-direction: column;
+  ion-grid {
+    height: 100%;
+  }
+  ion-row:first-child {
+    height: calc(100% - 56px);
+    ion-col {
+      height: 100%;
+      display: flex;
+    }
+  }
+  ion-row:last-child {
+    height:auto;
+    ion-col {
+      height:auto;
+    }
+  }
   ion-list {
     display:flex;
     flex-direction: row;
@@ -21,19 +35,28 @@ ion-content {
     }
   }
 }
+.center {
+  align-self: center;
+}
 .figure { 
-  width:calc((100vh - 112px) * 0.575);
-  margin:auto;
+  /*width:calc((100vh - 112px) * 0.575);*/
+  margin: 0;
   --offset-top: auto;
   --offset-bottom: auto;
   position: relative;
   display:flex;
-  svg {
-    margin:auto;
+  max-height:100%;
+  > svg {
+    margin:auto 0;
     display:flex;
-    width:100%;
-    max-height:100%;
+    max-height:calc(100vh - 126px);
     z-index:1;
+    &.front {
+      margin-left: auto;
+    }
+    &.back {
+      margin-right:auto;
+    }
   }
   .mark {
     position: absolute;
@@ -48,6 +71,12 @@ ion-content {
     -moz-user-select: auto !important;
     -ms-user-select: auto !important;
     user-select: auto !important;
+    svg {
+      margin:0;
+      max-height: 100%;
+      display: flex;
+      z-index: 1;
+    }
     &.flip {
       ion-item {
         margin-left:0;
