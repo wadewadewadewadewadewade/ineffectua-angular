@@ -6,7 +6,7 @@
     </ion-item>
     <div class="validation-errors">
       <ng-container *ngFor="let validation of validationMessages.label">
-        <div class="error-message" *ngIf="validationsForm.get('label').hasError(validation.type) && (validationsForm.get('label').dirty || validationsForm.get('label').touched)">
+        <div class="ion-margin error-message" *ngIf="validationsForm.get('label').hasError(validation.type) && (validationsForm.get('label').dirty || validationsForm.get('label').touched)">
           {{ validation.message }}
         </div>
       </ng-container>
@@ -18,7 +18,7 @@
     </ion-item>
     <div class="validation-errors">
       <ng-container *ngFor="let validation of validationMessages.added">
-        <div class="error-message" *ngIf="validationsForm.get('added').hasError(validation.type) && (validationsForm.get('added').dirty || validationsForm.get('added').touched)">
+        <div class="ion-margin error-message" *ngIf="validationsForm.get('added').hasError(validation.type) && (validationsForm.get('added').dirty || validationsForm.get('added').touched)">
           {{ validation.message }}
         </div>
       </ng-container>
@@ -40,7 +40,7 @@
 
     <ion-item class="description">
       <ion-label position="floating" color="secondary">Description</ion-label>
-      <ion-textarea type="text" formControlName="description" class="form-controll"></ion-textarea>
+      <ion-textarea type="text" formControlName="description" class="form-controll" autoGrow="true"></ion-textarea>
     </ion-item>
 
     <ion-button color="primary" expand="full" type="submit"  [disabled]="!validationsForm.valid">Save</ion-button>

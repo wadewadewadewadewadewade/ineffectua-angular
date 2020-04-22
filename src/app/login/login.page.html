@@ -13,7 +13,7 @@
     </ion-item>
     <div class="validation-errors">
       <ng-container *ngFor="let validation of validationMessages.email">
-        <div class="error-message" *ngIf="validationsForm.get('email').hasError(validation.type) && (validationsForm.get('email').dirty || validationsForm.get('email').touched)">
+        <div class="ion-margin error-message" *ngIf="validationsForm.get('email').hasError(validation.type) && (validationsForm.get('email').dirty || validationsForm.get('email').touched)">
           {{ validation.message }}
         </div>
       </ng-container>
@@ -25,7 +25,7 @@
     </ion-item>
     <div class="validation-errors">
       <ng-container *ngFor="let validation of validationMessages.password">
-        <div class="error-message" *ngIf="validationsForm.get('password').hasError(validation.type) && (validationsForm.get('password').dirty || validationsForm.get('password').touched)">
+        <div class="ion-margin error-message" *ngIf="validationsForm.get('password').hasError(validation.type) && (validationsForm.get('password').dirty || validationsForm.get('password').touched)">
           {{ validation.message }}
         </div>
       </ng-container>
