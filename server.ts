@@ -8,6 +8,11 @@ import { AppServerModule } from './src/main.server';
 import { APP_BASE_HREF } from '@angular/common';
 import { existsSync } from 'fs';
 
+//firebase cloud functions
+import * as functions from 'firebase-functions';
+
+const DISABLE_FIREBASE = process.env.DISABLE_FIREBASE || false;
+
 // The Express app is exported so that it can be used by serverless Functions.
 export function app() {
   const server = express();
@@ -59,12 +64,15 @@ function run() {
   const server = app();
 
   // Don't listen when deploying to Firebase Cloud Functions - https://fireship.io/lessons/angular-universal-firebase/
-  // if (!process.argv.includes('firebase')) {
+  if (DISABLE_FIREBASE) { 
     server.listen(port, () => {
       console.log(`Node Express server listening on http://localhost:${port}`);
     });
-  // }
+  }
 }
+
+// https://medium.com/angular-in-depth/angular-5-universal-firebase-4c85a7d00862
+export let ssr = DISABLE_FIREBASE ? null : functions.https.onRequest(app);
 
 // Webpack will replace 'require' with '__webpack_require__'
 // '__non_webpack_require__' is a proxy to Node 'require'
