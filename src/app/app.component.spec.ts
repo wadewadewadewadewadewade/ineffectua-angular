@@ -2,13 +2,13 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { TestBed, async } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Platform } from '@ionic/angular';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
+// import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+// import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppComponent } from './app.component';
 import { BehaviorSubject } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { AuthenticationService, Credentials } from './services/authentication.service';
+import { environment } from './../environments/environment';
+import { FirebaseDataService, Credentials } from './services/firebasedata.service';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireModule } from '@angular/fire';
@@ -44,7 +44,7 @@ describe('AppComponent', () => {
 
     }
   }
-  class AuthenticationSpy extends AuthenticationService {
+  class AuthenticationSpy extends FirebaseDataService {
     isLoggedIn(): Promise<firebase.User> {
       return new Promise((resolve, _reject) => resolve());
     }
@@ -72,9 +72,7 @@ describe('AppComponent', () => {
         AngularFireModule.initializeApp(environment.firebase),
         { provide: AngularFireDatabaseModule, useValue: DatabaseStub },
         { provide: AngularFireAuthModule, useValue: AuthStub },
-        { provide: AuthenticationService, useClass: AuthenticationSpy },
-        { provide: StatusBar, useValue: statusBarSpy },
-        { provide: SplashScreen, useValue: splashScreenSpy },
+        { provide: FirebaseDataService, useClass: AuthenticationSpy },
         { provide: Platform, useValue: platformSpy },
       ],
       imports: [
@@ -98,5 +96,8 @@ describe('AppComponent', () => {
   });
 
   // TODO: add more tests!
+
+  // { provide: StatusBar, useValue: statusBarSpy },
+  // { provide: SplashScreen, useValue: splashScreenSpy },
 
 });

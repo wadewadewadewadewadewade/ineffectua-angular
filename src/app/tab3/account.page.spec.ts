@@ -1,8 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
-import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
 import { AccountPage } from './account.page';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 describe('AccountPage', () => {
   let component: AccountPage;
@@ -11,7 +11,11 @@ describe('AccountPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [AccountPage],
-      imports: [IonicModule.forRoot(), ExploreContainerComponentModule]
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        IonicModule.forRoot()
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AccountPage);

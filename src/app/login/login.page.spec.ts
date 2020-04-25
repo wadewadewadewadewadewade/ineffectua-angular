@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { LoginPage } from './login.page';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
+import { FirebaseDataService } from './../services/firebasedata.service';
 
 describe('LoginPage', () => {
   let component: LoginPage;
@@ -13,6 +14,7 @@ describe('LoginPage', () => {
     TestBed.configureTestingModule({
       declarations: [ LoginPage ],
       imports: [
+        FirebaseDataService,
         RouterTestingModule,
         FormsModule,
         ReactiveFormsModule,
