@@ -14,3 +14,5 @@ Ineffectua uses firebase for pretty much everything: functions, hosting, realtim
 ### Deploy
 
 running `firebase deploy` requires node 10, and will lint, build:ssr, and then deploy dist/app-server (looking at main.js) to ineffectua.web.app. Make sure to use firebase-functions 3.5.0 or greater (https://github.com/firebase/firebase-functions/issues/437)
+
+I removed /functions/ and added some lines to package.json that firebase deploy required, and used functions.https starting with (https://medium.com/angular-in-depth/angular-5-universal-firebase-4c85a7d00862) and modifying a lot. I also had to add moduleFilename.includes('firebase-tools') to server.ts to hook ssr=app() into funtions when being hosted from firebase functions.
