@@ -5,6 +5,16 @@ My wife is living in a broken body. But you cannot see the breaks by looking at 
 
 And she is not alone. There are thousands of others around the world that also have invisible illnesses. Lupus, fibromyalgia, and many varieties of auto-immune diseases abound, just to name a few classes of invisible illness.
 
+## Status
+
+Fails
+
+* `firebase serve` works but not `firebase deploy` because "ssr expects function, got object"
+* `ng test --coverage` fails for two basic reasons:
+** NullInjectorError: No provider for InjectionToken angularfire2.app.options
+** Can't bind to 'ngModel' since it isn't a known property of 'ion-input'
+** Can't bind to 'formGroup' since it isn't a known property of 'form' 
+
 ## Firebase
 
 Ineffectua uses firebase for pretty much everything: functions, hosting, realtime database. Getting it set up with SSR took some experimenting. I found these article helpful:
