@@ -10,7 +10,9 @@ describe('PainLogPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [PainLogPage],
-      imports: [IonicModule.forRoot()]
+      imports: [
+        IonicModule.forRoot()
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PainLogPage);

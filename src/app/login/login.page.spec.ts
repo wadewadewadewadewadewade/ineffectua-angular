@@ -14,7 +14,6 @@ describe('LoginPage', () => {
     TestBed.configureTestingModule({
       declarations: [ LoginPage ],
       imports: [
-        FirebaseDataService,
         RouterTestingModule,
         FormsModule,
         ReactiveFormsModule,

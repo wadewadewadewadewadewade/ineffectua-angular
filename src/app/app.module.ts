@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule, TransferState } from '@angular/platform-browser';
+import { BrowserModule, TransferState, BrowserTransferStateModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
@@ -11,9 +11,9 @@ import { AppComponent } from './app.component';
 import { environment } from 'src/environments/environment';
 import { FirebaseDataService } from './services/firebasedata.service';
 import { AngularFireModule } from '@angular/fire';
-import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
-import { AngularFireAnalyticsModule, ScreenTrackingService, UserTrackingService } from '@angular/fire/analytics';
+import { AngularFireAuthModule, AngularFireAuth } from '@angular/fire/auth';
+import { AngularFireDatabaseModule, AngularFireDatabase } from '@angular/fire/database';
+import { AngularFireAnalyticsModule, AngularFireAnalytics, ScreenTrackingService, UserTrackingService } from '@angular/fire/analytics';
 
 // Appointments
 import { NewAppointmentPageModule } from './tab1/new-appointment/new-appointment.module';
@@ -23,6 +23,7 @@ import { LocationDetailPageModule } from './tab2/location-detail/location-detail
 // import { SplashPageModule } from './splash/splash.module';
 import { SplashPage } from './splash/splash.page';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { StatusBarMock, SplashScreenMock } from 'ionic-mocks-jest';
 
 @NgModule({
   declarations: [
@@ -41,15 +42,19 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
     AngularDraggableModule,
     AngularFireAuthModule,
     AngularFireDatabaseModule,
-    AngularFireAnalyticsModule
+    AngularFireAnalyticsModule,
+    BrowserTransferStateModule,
   ],
   providers: [
-    StatusBar,
-    SplashScreen,
+    { provide: StatusBar, useClass: StatusBarMock },
+    { provide: SplashScreen, useClass: SplashScreenMock },
     FirebaseDataService,
     ScreenTrackingService,
     UserTrackingService,
     TransferState,
+    AngularFireAuth,
+    AngularFireDatabase,
+    AngularFireAnalytics,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

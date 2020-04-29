@@ -15,6 +15,8 @@ Fails
 ** Can't bind to 'ngModel' since it isn't a known property of 'ion-input'
 ** Can't bind to 'formGroup' since it isn't a known property of 'form' 
 
+https://medium.com/@gregor.woiwode/how-to-setup-jest-in-an-ionic-4-project-ff1e5b72dd79
+
 ## Firebase
 
 Ineffectua uses firebase for pretty much everything: functions, hosting, realtime database. Getting it set up with SSR took some experimenting. I found these article helpful:
