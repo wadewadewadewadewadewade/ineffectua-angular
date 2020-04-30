@@ -10,10 +10,8 @@ And she is not alone. There are thousands of others around the world that also h
 Fails
 
 * `firebase serve` works but not `firebase deploy` because "ssr expects function, got object"
-* `ng test --coverage` fails for two basic reasons:
+* `ng test --coverage` fails for one reason I am still trying to solve:
 ** NullInjectorError: No provider for InjectionToken angularfire2.app.options
-** Can't bind to 'ngModel' since it isn't a known property of 'ion-input'
-** Can't bind to 'formGroup' since it isn't a known property of 'form' 
 
 https://medium.com/@gregor.woiwode/how-to-setup-jest-in-an-ionic-4-project-ff1e5b72dd79
 
